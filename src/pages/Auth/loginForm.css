@@ -1,0 +1,70 @@
+.authContainer {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  background: transparent;
+  background-image: url("../../assests/bc.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.selectorWidth {
+  width: 16.25rem;
+}
+
+.userRegistartionFormPreview {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-gap: 1rem;
+}
+
+.authRightBox {
+  /* filter: blur(8px); */
+  /* background-image: url("../../assests/bc.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat; */
+  background: rgba(255, 255, 255, 0.9);
+  padding: 4rem;
+  border-radius: 0.5rem;
+}
+/* Mobile Devices (portrait and landscape) up to 767px */
+@media only screen and (max-width: 567px) {
+  .authLeftBox {
+    display: none;
+  }
+  .authRightBox {
+    display: block;
+  }
+}
+
+/* Tablets and Min Laptops 768px */
+@media only screen and (min-width: 568px) {
+  .authLeftBox {
+    display: none;
+  }
+  .authRightBox {
+    display: block;
+  }
+  .usersTablePreview {
+    display: none;
+  }
+}
+
+/* Desktops and larger screens 1340px*/
+@media only screen and (min-width: 840px) {
+  .authLeftBox {
+    display: block;
+  }
+  .authRightBox {
+    display: block;
+  }
+
+  .usersTablePreview {
+    display: block;
+  }
+}
