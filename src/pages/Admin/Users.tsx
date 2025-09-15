@@ -6,9 +6,12 @@ import BasicSelect from "../../components/other/BasicSelector";
 import { useUserContext } from "../../hooks/UserContextHook";
 import { FetchedUser } from "../../types/auth";
 import { Role, roleOptions } from "../../types/User";
+import ReusableModal from "../../components/other/Modal";
+import EditUser from "./EditUser";
+import { MdDelete } from "react-icons/md";
 
 export default function UsersTablePage({ role }: { role: Role }) {
-  const { users, getAllUsers } = useUserContext();
+  const { users, getAllUsers, deleteUser } = useUserContext();
 
   const [allUsers, setUsers] = useState<FetchedUser[]>([]);
   const [filterRole, setFilterRole] = useState<string>("All");
@@ -23,12 +26,9 @@ export default function UsersTablePage({ role }: { role: Role }) {
     }
   }, [users]);
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
+    await deleteUser(id);
     setUsers((prev) => prev.filter((user) => user.id !== id));
-  };
-
-  const handleEdit = (id: string) => {
-    alert(`Edit user with ID: ${id}`);
   };
 
   const filteredUsers =
@@ -53,21 +53,16 @@ export default function UsersTablePage({ role }: { role: Role }) {
       align: "center",
       render: (_, row) => (
         <Box sx={{ display: "flex", gap: 1, justifyContent: "center" }}>
-          <Button
-            variant="outlined"
-            color="primary"
-            size="small"
-            onClick={() => handleEdit(row)}
-          >
-            Edit
-          </Button>
+          <ReusableModal buttonLabel="EDIT" title="Edit user">
+            <EditUser userToUpdate={row} />
+          </ReusableModal>
           <Button
             variant="outlined"
             color="error"
             size="small"
             onClick={() => handleDelete(row.id)}
           >
-            Delete
+            <MdDelete />
           </Button>
         </Box>
       ),

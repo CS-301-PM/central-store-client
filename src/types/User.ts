@@ -4,13 +4,20 @@ export type Role =
   | "DEPARTMENT_DEAN"
   | "CFO"
   | "ADMIN";
+export const roleOptionsForUserRegistration: {
+  value: Role;
+  label: string;
+}[] = [
+  { value: "ADMIN", label: "Admin" },
+  { value: "STORES_MANAGER", label: "Stores Manager" },
+  { value: "PROCUREMENT_OFFICER", label: "Procurement Officer" },
+  { value: "DEPARTMENT_DEAN", label: "Department Dean" },
+  { value: "CFO", label: "Chief Financial Officer" },
+];
 
-export const roleOptions = [
+export const roleOptions: { value: Role | "All"; label: string }[] = [
   { value: "All", label: "All Roles" },
-  { value: "admin", label: "Admin" },
-  { value: "manager", label: "Manager" },
-  { value: "storekeeper", label: "Storekeeper" },
-  { value: "department_hod", label: "Department HOD" },
+  ...roleOptionsForUserRegistration,
 ];
 
 export type User = {

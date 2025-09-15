@@ -7,10 +7,13 @@ export const MOVE_STOCK = "MOVE_STOCK";
 export const REPORT_STOCK = "REPORT_STOCK";
 
 export interface Stock {
-  id: string;
-  name: string;
-  quantity: number;
-  location?: string;
+  stockId?: string;
+  itemName?: string;
+  originalQuantity?: number;
+  currentQuantity?: number;
+  costEach?: number;
+  totalCost?: number;
+  dateIn?: string;
 }
 
 export interface StockState {

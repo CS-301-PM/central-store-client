@@ -3,6 +3,7 @@ import RequestTableHeader from "../../components/other/RequestTableHeader";
 import AppButton from "../../components/other/AppButton";
 import UsersTablePage from "./Users";
 import { Role } from "../../types/User";
+import ReusableModal from "../../components/other/Modal";
 // import { useUserContext } from "../../hooks/UserContextHook";
 // import { useEffect } from "react";
 
@@ -20,7 +21,7 @@ function Admin({ role }: { role: Role }) {
         </Link>
       </RequestTableHeader>
       <div className="mt-4">
-        <UsersTablePage />
+        <UsersTablePage role="role" />
       </div>
     </div>
   );

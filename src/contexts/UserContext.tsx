@@ -95,7 +95,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
             email: "john.doe@example.com",
             employeeId: "12345678",
             department: "registry",
-            role: "ADMIN",
+            role: "STORES_MANAGER",
             blockchainId: "0x1234567890abcdef",
           },
         });
@@ -172,8 +172,10 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateUser = async (user: FetchedUser) => {
+    setIsLoading(true);
     const URL = `${import.meta.env.VITE_SERVER}/api/user/update`;
     dispatch({ type: "UPDATE_USER", payload: user });
+    setIsLoading(false);
   };
 
   const getAllUsers = async (): Promise<FetchedUser[]> => {

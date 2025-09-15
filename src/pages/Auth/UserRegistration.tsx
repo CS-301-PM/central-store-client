@@ -4,14 +4,18 @@ import { Link } from "react-router-dom";
 import AppButton from "../../components/other/AppButton";
 import InputField from "../../components/other/InputFild";
 import BasicSelect from "../../components/other/BasicSelector";
-import { departmentOptions, Role, roleOptions } from "../../types/User";
+import {
+  departmentOptions,
+  Role,
+  roleOptionsForUserRegistration,
+} from "../../types/User";
 
 import "./loginForm.css";
 import { useUserContext } from "../../hooks/UserContextHook";
 import UsersTablePage from "../Admin/Users";
 
 export default function UserRegistration({ role }: { role: Role }) {
-  const { addUser } = useUserContext();
+  const { addUser, isLoading, user } = useUserContext();
 
   const [firstName, setFirstName] = React.useState<string>("");
   const [lastName, setLastName] = React.useState<string>("");
@@ -19,7 +23,9 @@ export default function UserRegistration({ role }: { role: Role }) {
   const [department, setDepartment] = React.useState(
     departmentOptions[0].value
   );
-  const [userRole, setUserRole] = React.useState(roleOptions[2].value);
+  const [userRole, setUserRole] = React.useState(
+    roleOptionsForUserRegistration[1].value
+  );
   const [password, setPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
   const [errors, setErrors] = React.useState<Record<string, string | null>>({});
@@ -38,9 +44,9 @@ export default function UserRegistration({ role }: { role: Role }) {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      alert(
-        `User registered:\nName: ${firstName}\nEmployee ID: ${employeeId}\nDepartment: ${department}\nRole: ${role}`
-      );
+      // alert(
+      //   `User registered:\nName: ${firstName}\nEmployee ID: ${employeeId}\nDepartment: ${department}\nRole: ${role}`
+      // );
 
       await addUser({
         firstname: firstName,
@@ -50,15 +56,23 @@ export default function UserRegistration({ role }: { role: Role }) {
         password,
       });
 
-      setFirstName("");
-      setEmployeeId("");
-      setDepartment(departmentOptions[0].value);
-      setUserRole(roleOptions[0].value);
-      setPassword("");
-      setConfirmPassword("");
+      // setFirstName("");
+      // setEmployeeId("");
+      // setDepartment(departmentOptions[0].value);
+      // setUserRole(roleOptionsForUserRegistration[1].value);
+      // setPassword("");
+      // setConfirmPassword("");
     }
   };
 
+  if (
+    user &&
+    user.user?.role !== "ADMIN" &&
+    user &&
+    user.user?.role !== "STORES_MANAGER"
+  ) {
+    return;
+  }
   return (
     <div>
       <RequestTableHeader
@@ -90,7 +104,7 @@ export default function UserRegistration({ role }: { role: Role }) {
               label="Last Name"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
-              error={errors.firstName || null}
+              error={errors.lastName || null}
             />
 
             <InputField
@@ -112,9 +126,9 @@ export default function UserRegistration({ role }: { role: Role }) {
             <div className="mb-1 selectorWidth">
               <BasicSelect
                 label="Role"
-                value={role}
-                options={roleOptions}
-                onChange={(val) => setUserRole(String(val))}
+                value={userRole}
+                options={roleOptionsForUserRegistration}
+                onChange={(val) => setUserRole(String(val) as Role)}
               />
             </div>
 
@@ -135,7 +149,12 @@ export default function UserRegistration({ role }: { role: Role }) {
             />
 
             <div className="m-2">
-              <AppButton variant="contained" color="warning" type="submit">
+              <AppButton
+                disabled={isLoading}
+                variant="contained"
+                color="warning"
+                type="submit"
+              >
                 Register
               </AppButton>
             </div>

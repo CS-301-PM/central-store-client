@@ -1,43 +1,32 @@
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Column, ReusableTable } from "../../components/other/StocksTable";
 import RequestTableHeader from "../../components/other/RequestTableHeader";
 import AppButton from "../../components/other/AppButton";
-import { Link } from "react-router-dom";
 import { Role } from "../../types/User";
+import { useStockManagementContext } from "../../hooks/useStockManagementContext";
+import { Stock } from "../../reducers/StockManagementReducer";
+import DynamicTable from "../../components/other/DynamicTable";
 
-type StockData = {
-  id: string;
-  itemName: string;
-  originalLevel: number;
-  currentLevel: number;
-  availability: "Available" | "Low Stock" | "Out of Stock";
-};
-
-function createStock(
-  id: string,
-  itemName: string,
-  originalLevel: number,
-  currentLevel: number
-): StockData {
-  let availability: StockData["availability"] = "Available";
-
-  if (currentLevel === 0) availability = "Out of Stock";
-  else if (currentLevel <= originalLevel * 0.25) availability = "Low Stock";
-
-  return { id, itemName, originalLevel, currentLevel, availability };
-}
-
-const stockData: StockData[] = [
-  createStock("STK001", "A4 Books", 200, 50),
-  createStock("STK002", "Pens", 500, 300),
-  createStock("STK003", "Notebooks", 100, 0),
-  createStock("STK004", "Markers", 80, 20),
-];
-
-const stockColumns: Column<StockData>[] = [
-  { key: "id", label: "ID" },
-  { key: "itemName", label: "Item Name" },
-  { key: "originalLevel", label: "Original Level", align: "right" },
-  { key: "currentLevel", label: "Current Level", align: "right" },
+const stockColumns: Column<Stock>[] = [
+  {
+    key: "id",
+    label: "ID",
+  },
+  {
+    key: "itemName",
+    label: "Item Name",
+  },
+  {
+    key: "originalLevel",
+    label: "Original Level",
+    align: "right",
+  },
+  {
+    key: "currentLevel",
+    label: "Current Level",
+    align: "right",
+  },
   {
     key: "availability",
     label: "Availability",
@@ -61,6 +50,13 @@ const stockColumns: Column<StockData>[] = [
 ];
 
 export default function StockTablePage({ role }: { role: Role }) {
+  const { state, listAllStocks } = useStockManagementContext();
+  const { items } = state;
+
+  useEffect(() => {
+    listAllStocks([]);
+  }, []);
+
   return (
     <div>
       <RequestTableHeader
@@ -69,7 +65,7 @@ export default function StockTablePage({ role }: { role: Role }) {
       >
         <Link
           to={
-            role == "PROCUREMENT_OFFICER"
+            role === "PROCUREMENT_OFFICER"
               ? "/procurement/requests"
               : "/manager/requests"
           }
@@ -79,14 +75,7 @@ export default function StockTablePage({ role }: { role: Role }) {
           </AppButton>
         </Link>
       </RequestTableHeader>
-      <ReusableTable
-        columns={stockColumns}
-        data={stockData}
-        getRowStyle={(row, index) => ({
-          backgroundColor: index % 2 === 0 ? "#fff" : "#fafafa",
-          cursor: "pointer",
-        })}
-      />
+      <DynamicTable data={items} />
     </div>
   );
 }

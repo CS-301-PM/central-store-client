@@ -1,5 +1,5 @@
 import { FetchedUser, AuthUserState } from "../types/auth";
-import { UserRegistration } from "../types/User";
+// import { UserRegistration } from "../types/User";
 
 export const SIGNUP = "SIGNUP";
 export const SIGNIN = "SIGNIN";
@@ -62,7 +62,13 @@ export const userReducer = (
     case UPDATE_USER:
       return {
         ...state,
+        users: (state.users ?? []).map((user) =>
+          user.employeeId === action.payload.employeeId
+            ? { ...user, ...action.payload }
+            : user
+        ),
       };
+
     case GET_ALL_USERS:
       return {
         ...state,

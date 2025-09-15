@@ -5,6 +5,7 @@ import {
   StockState,
   //   initialState,
 } from "../reducers/StockManagementReducer";
+import { simpleStocks } from "../utils/Constants";
 
 export type StockManagementContextType = {
   state: StockState;
@@ -34,7 +35,10 @@ export const StockManagementProvider = ({
   const [state, dispatch] = useReducer(stockReducer, initialState);
 
   const listAllStocks = (stocks: Stock[]) =>
-    dispatch({ type: "LIST_ALL_STOCK", payload: stocks });
+    dispatch({
+      type: "LIST_ALL_STOCK",
+      payload: simpleStocks,
+    });
 
   const getOneStock = (stock: Stock) =>
     dispatch({ type: "GET_ONE_STOCK", payload: stock });

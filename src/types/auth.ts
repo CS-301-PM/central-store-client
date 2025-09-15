@@ -1,9 +1,10 @@
-// export type Role =
-//   | "admin"
-//   | "manager"
-//   | "staff_central_store"
-//   | "staff_department"
-//   | "supplier";
+export type Department =
+  | "registry"
+  | "finance"
+  | "human-resources"
+  | "procurement"
+  | "library"
+  | "ict";
 
 import { Role } from "./User";
 
@@ -56,11 +57,3 @@ export type ErrorResponse = {
 };
 
 //
-
-export type Department =
-  | "registry"
-  | "finance"
-  | "human-resources"
-  | "procurement"
-  | "library"
-  | "ict";
