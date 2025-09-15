@@ -24,7 +24,7 @@ type AuthActionTypes =
   | { type: typeof LIST_DEPARTMENTS; payload: string[] }
   | { type: typeof NEW_DEPARTMENT; payload: string }
   | { type: typeof DELETE_USER; payload: string }
-  | { type: typeof ADD_USER; payload: UserRegistration };
+  | { type: typeof ADD_USER; payload: FetchedUser };
 
 export const userReducer = (
   state: AuthUserState,
@@ -58,7 +58,6 @@ export const userReducer = (
     case HAS_ADMIN:
       return {
         ...state,
-        hasAdmin: action.payload,
       };
     case UPDATE_USER:
       return {
@@ -72,7 +71,7 @@ export const userReducer = (
     case LIST_DEPARTMENTS:
       return {
         ...state,
-        departments: action.payload,
+        // departments: action.payload,
       };
     case NEW_DEPARTMENT:
       return {
