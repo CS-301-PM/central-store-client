@@ -16,12 +16,21 @@ function Logs({ role }: { role: Role }) {
       setLoading(true);
       setError(null);
       try {
-        // const response = await fetch("/api/logs"); // adjust API endpoint
-        // if (!response.ok) {
-        //   throw new Error("Failed to fetch logs");
-        // }
-        // const data = await response.json();
-        setLogs(blockchainLogs);
+        const URL = `${import.meta.env.VITE_SERVER}/api/log/all`;
+        const res = await fetch(URL, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          // body: JSON.stringify({ requestId, statusType }),
+        });
+
+        if (!res.ok) {
+          throw new Error(`HTTP error ${res.status}`);
+        }
+        const allLogs = await res.json();
+        setLogs(allLogs);
       } catch (err: any) {
         setError(err.message || "Something went wrong");
       } finally {

@@ -34,7 +34,7 @@ function LoginForm() {
     e.preventDefault();
     if (!validate()) return;
 
-    await signIn({ employeeNumber: employeeId, password });
+    await signIn({ username: "stores_manager1", password: "testpass123" });
     // TODO: Add login logic (API call, context update, etc.)
   };
 
@@ -43,7 +43,7 @@ function LoginForm() {
       <div className="authInnerContainer">
         <form onSubmit={handleSubmit} className="authRightBox">
           <InputField
-            label="Employee ID"
+            label="Username"
             value={employeeId}
             onChange={(e) => setEmployeeId(e.target.value)}
             error={errors.employeeId || null}
@@ -59,7 +59,7 @@ function LoginForm() {
 
           <div className="m-2">
             <AppButton
-              disabled={isLoading}
+              // disabled={isLoading}
               variant="outlined"
               color="primary"
               type="submit"

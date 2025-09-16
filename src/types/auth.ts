@@ -11,8 +11,8 @@ import { Role } from "./User";
 export interface FetchedUser {
   id?: string;
   role: Role;
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
   email?: string;
   employeeId?: string;
   department?: Department | "";

@@ -7,9 +7,6 @@ import {
 import { FetchedRequestObj, RequestObj, StatusType } from "../types/Request";
 import { mockRequests } from "../utils/Constants";
 
-// ----------------------
-// Context Type
-// ----------------------
 export type RequestManagementContextType = {
   state: RequestState;
   makeRequest: (req: RequestObj) => void;
@@ -24,9 +21,6 @@ export const RequestManagementContext = createContext<
   RequestManagementContextType | undefined
 >(undefined);
 
-// ----------------------
-// Provider
-// ----------------------
 export const RequestManagementProvider = ({
   children,
 }: {
@@ -34,24 +28,66 @@ export const RequestManagementProvider = ({
 }) => {
   const [state, dispatch] = useReducer(requestReducer, initialState);
 
-  const makeRequest = (newRequest: RequestObj) => {
+  const makeRequest = async (newRequest: RequestObj) => {
     state.loading = true;
-    // add the responded req from the server on the payload
-    const respondedRequest: FetchedRequestObj = { ...newRequest };
+    const URL = `${import.meta.env.VITE_SERVER}/api/makerequests`;
+    const res = await fetch(URL, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newRequest),
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error ${res.status}`);
+    }
+    const request = await res.json();
+    const respondedRequest: FetchedRequestObj = { ...request };
     dispatch({ type: "MAKE_REQUEST", payload: respondedRequest });
     state.loading = true;
   };
 
-  const getAllRequests = () => {
+  const getAllRequests = async () => {
     state.loading = true;
-    dispatch({ type: "LIST_ALL_REQUESTS", payload: mockRequests });
+    const URL = `${import.meta.env.VITE_SERVER}/api/request/getall`;
+    const res = await fetch(URL, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      // body: JSON.stringify(newRequest),
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error ${res.status}`);
+    }
+    const requests = await res.json();
+    dispatch({ type: "LIST_ALL_REQUESTS", payload: requests });
     state.loading = false;
   };
 
-  const updateRequestStatus = (requestId: string, statusType: StatusType) => {
-    // send the update to the server.
-    console.log(requestId, statusType);
+  const updateRequestStatus = async (
+    requestId: string,
+    statusType: StatusType
+  ) => {
     state.loading = true;
+    const URL = `${import.meta.env.VITE_SERVER}/api/request/update`;
+    const res = await fetch(URL, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ requestId, statusType }),
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error ${res.status}`);
+    }
+    // const requests = await res.json();
     dispatch({
       type: "UPDATE_REQUEST_STATUS",
       payload: { requestId, statusType },
