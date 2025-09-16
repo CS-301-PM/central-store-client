@@ -1,12 +1,5 @@
 import "./Header.css";
 import { RiMenuFold2Fill } from "react-icons/ri";
-// import { IoNotificationsCircleSharp } from "react-icons/io5";
-// import { MdAdminPanelSettings } from "react-icons/md";
-// import { FaUserTie } from "react-icons/fa";
-// import { BsPersonFillGear } from "react-icons/bs";
-// import { BsPersonFillCheck } from "react-icons/bs";
-// import { FaClipboardUser } from "react-icons/fa6";
-// import { NavLink } from "react-router-dom";
 
 import { useUserContext } from "../../hooks/UserContextHook";
 import AccountMenu from "../other/AccountMenu";
@@ -25,21 +18,10 @@ function Header() {
             data-bs-target="#offcanvasExample"
             aria-controls="offcanvasExample"
           />
-          <h1>CENTRAL-STORES</h1>
+          <h2 className="h2">CENTRAL STORES</h2>
         </div>
         <div className="headerRight">
           <AccountMenu />
-          {/* <IoNotificationsCircleSharp className="headerIcon" /> */}
-          {/* {role === "ADMIN" && <MdAdminPanelSettings className="headerIcon" />}
-          {role === "STORES_MANAGER" && <FaUserTie className="headerIcon" />}
-          {role === "DEPARTMENT_DEAN" && (
-            <BsPersonFillGear className="headerIcon" />
-          )}
-          {role === "PROCUREMENT_OFFICER" && (
-            <BsPersonFillCheck className="headerIcon" />
-          )}
-          {role === "CFO" && <FaClipboardUser className="headerIcon" />}
-        */}
         </div>
       </div>
     </div>
