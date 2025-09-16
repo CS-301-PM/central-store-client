@@ -1,0 +1,79 @@
+.mainLayout {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+.layouts {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  overflow-y: auto;
+}
+
+/* Mobile Devices (portrait and landscape) up to 767px */
+@media only screen and (max-width: 567px) {
+  #header {
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6rem;
+    display: grid;
+  }
+  #render {
+    left: 0;
+    right: 0;
+    top: 6rem;
+    bottom: 0;
+  }
+  #sideBar {
+    display: none;
+  }
+}
+
+/* Tablets and Min Laptops 768px */
+@media only screen and (min-width: 568px) {
+  #header {
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 6rem;
+    display: grid;
+  }
+  #render {
+    top: 6em;
+    bottom: 0;
+    left: 6rem;
+    right: 0rem;
+  }
+  #sideBar {
+    top: 6rem;
+    left: 0;
+    bottom: 0;
+    width: 6rem;
+    display: grid;
+    grid-template-rows: 1fr 30%;
+  }
+}
+
+/* Desktops and larger screens 1340px*/
+@media only screen and (min-width: 840px) {
+  #header {
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6rem;
+    display: grid;
+  }
+  #render {
+    top: 6rem;
+    bottom: 0;
+    left: 13rem;
+    right: 0rem;
+  }
+  #sideBar {
+    top: 6rem;
+    bottom: 0;
+    width: 13rem;
+  }
+}

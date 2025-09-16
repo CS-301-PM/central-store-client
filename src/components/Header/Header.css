@@ -1,0 +1,43 @@
+#header {
+  display: grid;
+  background-color: #f0f0f0b2;
+}
+
+#headerContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem;
+}
+
+.headerIcon {
+  font-size: 2rem;
+  margin: 0 0.5rem;
+}
+
+/* Mobile Devices (portrait and landscape) up to 767px */
+@media only screen and (max-width: 567px) {
+  .headerLeft {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  .menuIcon {
+    display: block;
+  }
+}
+
+/* Tablets and Min Laptops 768px */
+@media only screen and (min-width: 568px) {
+  .menuIcon {
+    display: none;
+  }
+}
+
+/* Desktops and larger screens 1340px*/
+@media only screen and (min-width: 840px) {
+  .menuIcon {
+    display: none;
+  }
+}
