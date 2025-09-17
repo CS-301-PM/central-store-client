@@ -1,18 +1,18 @@
 import { Role } from "../types/User";
 
 export const getRedirectPath = (role: Role): string => {
-switch (role) {
-  case "ADMIN":
-    return "/admin";
-  case "STORES_MANAGER":
-    return "/central_store";
-  case "DEPARTMENT_DEAN":
-    return "/department";
-  case "CFO":
-    return "/cfo/funds";
-  case "PROCUREMENT_OFFICER":
-    return "/procurements";
-  default:
-    return "/"; 
-}
+  switch (role) {
+    case "ADMIN":
+      return "/admin/users";
+    case "STORES_MANAGER":
+      return "/manager/dashboard";
+    case "DEPARTMENT_DEAN":
+      return "/department/requests";
+    case "CFO":
+      return "/cfo/funds";
+    case "PROCUREMENT_OFFICER":
+      return "/procurement/requests";
+    default:
+      return "/";
+  }
 };

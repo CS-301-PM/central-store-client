@@ -94,7 +94,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
             email: "john.doe@example.com",
             employeeId: "12345678",
             department: "registry",
-            role: "STORES_MANAGER",
+            role: "PROCUREMENT_OFFICER",
             blockchainId: "0x1234567890abcdef",
           },
         });
@@ -166,20 +166,22 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const deleteAccount = async (userDeleteAccount: AuthUserState) => {
-    const URL = `${import.meta.env.VITE_SERVER}/api/user/delete`;
+    const URL = `${import.meta.env.VITE_SERVER}/`;
     dispatch({ type: "DELETE", payload: userDeleteAccount });
   };
 
   const updateUser = async (user: FetchedUser) => {
+    alert(5555);
+
     setIsLoading(true);
-    const URL = `${import.meta.env.VITE_SERVER}/api/user/update`;
+    const URL = `${import.meta.env.VITE_SERVER}/`;
     dispatch({ type: "UPDATE_USER", payload: user });
     setIsLoading(false);
   };
 
   const getAllUsers = async (): Promise<FetchedUser[]> => {
     setIsLoading(true);
-    const URL = `${import.meta.env.VITE_SERVER}/api/user/all`;
+    const URL = `${import.meta.env.VITE_SERVER}/`;
     // const response = await fetch(URL, {
     //   method: "GET",
     //   credentials: "include",

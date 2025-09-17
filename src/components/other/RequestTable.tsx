@@ -121,7 +121,9 @@ export default function EnhancedTable({ role }: { role: Role }) {
               <TableCell align="left">Quantity</TableCell>
               <TableCell align="right">Department</TableCell>
               <TableCell align="left">Priority</TableCell>
+              <TableCell align="left">Reason</TableCell>
               <TableCell align="left">Status</TableCell>
+
               {/* <TableCell align="center">Status</TableCell> */}
             </TableRow>
           </TableHead>
@@ -143,17 +145,9 @@ export default function EnhancedTable({ role }: { role: Role }) {
                   {request.from.departmentName}
                 </TableCell>
                 <TableCell align="left">{request.priority}</TableCell>
+                <TableCell align="left">{request.reason}</TableCell>
+
                 <TableCell align="left">
-                  {/* {(user?.user?.role === "DEPARTMENT_DEAN" ||
-                    user?.user?.role === "STORES_MANAGER") && (
-                    // <AppButton
-                    //   onClick={() => handleStatusChange(request)}
-                    //   variant="contained"
-                    //   color={getStatusColor(request.status)}
-                    // >
-                    //   {request.status}
-                    // </AppButton>
-                  )} */}
                   <StatusMenu
                     status={request.status}
                     onChange={(newStatus) =>

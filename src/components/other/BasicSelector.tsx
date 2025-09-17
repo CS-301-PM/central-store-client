@@ -37,8 +37,8 @@ const BasicSelect: React.FC<BasicSelectProps> = ({
   };
 
   return (
-    <Box sx={{ minWidth: 0 }}>
-      <FormControl className="p-2" fullWidth={fullWidth}>
+    <Box sx={{ display: "flex", flexWrap: "wrap" }}>
+      <FormControl sx={{ m: 2, width: "100%" }}>
         <InputLabel>{label}</InputLabel>
         <Select value={value} label={label} onChange={handleChange}>
           {options.map((option) => (

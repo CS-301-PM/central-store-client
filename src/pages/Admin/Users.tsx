@@ -5,12 +5,12 @@ import Button from "@mui/material/Button";
 import BasicSelect from "../../components/other/BasicSelector";
 import { useUserContext } from "../../hooks/UserContextHook";
 import { FetchedUser } from "../../types/auth";
-import { Role, roleOptions } from "../../types/User";
+import { roleOptions } from "../../types/User";
 import ReusableModal from "../../components/other/Modal";
-import EditUser from "./EditUser";
 import { MdDelete } from "react-icons/md";
+import NewUserForm from "../Auth/NewUserForm";
 
-export default function UsersTablePage({ role }: { role: Role }) {
+export default function UsersTablePage() {
   const { users, getAllUsers, deleteUser } = useUserContext();
 
   const [allUsers, setUsers] = useState<FetchedUser[]>([]);
@@ -54,7 +54,7 @@ export default function UsersTablePage({ role }: { role: Role }) {
       render: (_, row) => (
         <Box sx={{ display: "flex", gap: 1, justifyContent: "center" }}>
           <ReusableModal buttonLabel="EDIT" title="Edit user">
-            <EditUser userToUpdate={row} />
+            <NewUserForm isNew={false} userToUpdate={row} />
           </ReusableModal>
           <Button
             variant="outlined"

@@ -7,9 +7,6 @@ import {
 import { FetchedRequestObj, RequestObj, StatusType } from "../types/Request";
 import { mockRequests } from "../utils/Constants";
 
-// ----------------------
-// Context Type
-// ----------------------
 export type RequestManagementContextType = {
   state: RequestState;
   makeRequest: (req: RequestObj) => void;
@@ -17,16 +14,10 @@ export type RequestManagementContextType = {
   updateRequestStatus: (requestId: string, statusType: StatusType) => void;
 };
 
-// ----------------------
-// Context
-// ----------------------
 export const RequestManagementContext = createContext<
   RequestManagementContextType | undefined
 >(undefined);
 
-// ----------------------
-// Provider
-// ----------------------
 export const RequestManagementProvider = ({
   children,
 }: {

@@ -129,7 +129,7 @@ function Funds() {
   return (
     <div className="p-4">
       <RequestTableHeader
-        title="CFO Dashboard"
+        title="Financial operations"
         subtitle="Review and authorize procurement officer requests"
       />
 

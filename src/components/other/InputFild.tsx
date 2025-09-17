@@ -36,7 +36,7 @@ export default function InputField({
 
   return (
     <Box sx={{ display: "flex", flexWrap: "wrap" }}>
-      <FormControl sx={{ m: 1, width: "28ch" }} variant="outlined">
+      <FormControl sx={{ m: 2, width: "100%" }} variant="outlined">
         <InputLabel>{label}</InputLabel>
         <OutlinedInput
           type={showToggle ? (show ? "text" : "password") : type}

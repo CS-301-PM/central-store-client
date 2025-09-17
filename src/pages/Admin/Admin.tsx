@@ -11,7 +11,7 @@ function Admin({ role }: { role: Role }) {
   return (
     <div className="p-2">
       <RequestTableHeader
-        title={role == "ADMIN" ? "Admin" : "Manager"}
+        title="Manage all users"
         subtitle="View and manage users."
       >
         <Link to={"/admin/new_user"}>

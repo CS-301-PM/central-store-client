@@ -28,34 +28,8 @@ export type DashboardRoutes = {
   [key in Role]: Route[];
 };
 
-// export const commonMenus = {
-//   users: {
-//     to: "/stores_manager/users",
-//     value: "users",
-//     label: "Users",
-//     icon: <FaUsers />,
-//   },
-//   newUser: {
-//     to: "/stores_manager/new_user",
-//     value: "new_user",
-//     label: "New user",
-//     icon: <FaUserPlus />,
-//   },
-//   stocks: {
-//     to: "/central_store/stocks",
-//     value: "stocks",
-//     label: "Stocks",
-//     icon: <MdInventory />,
-//   },
-//   requests: {
-//     to: "/central_store/requests",
-//     value: "requests",
-//     label: "Requests",
-//     icon: <MdEditNotifications />,
-//   },
-// };
-
 // 🔹 Dashboard menus
+
 export const dashboardRoutes: DashboardRoutes = {
   ADMIN: [
     { to: "/admin/users", value: "users", label: "Users", icon: <MdPeople /> },

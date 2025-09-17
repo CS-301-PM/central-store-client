@@ -9,7 +9,7 @@ function Requests({ role }: { role: Role }) {
   return (
     <div className="">
       <RequestTableHeader
-        title="Requests"
+        title="Department requests"
         subtitle="All pending and approved requests"
       >
         <Link

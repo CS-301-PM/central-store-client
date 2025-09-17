@@ -7,7 +7,7 @@ function Manager() {
   return (
     <div>
       <RequestTableHeader
-        title="Manager"
+        title="Manage department requests"
         subtitle="All pending and approved requests"
       >
         <Link to={"/central_store/stocks"}>

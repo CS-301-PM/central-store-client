@@ -14,7 +14,8 @@ import Logout from "@mui/icons-material/Logout";
 import { useUserContext } from "../../hooks/UserContextHook";
 
 export default function AccountMenu() {
-  const { signOut } = useUserContext();
+  const { signOut, user } = useUserContext();
+  const USER = user?.user;
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -42,7 +43,7 @@ export default function AccountMenu() {
             aria-haspopup="true"
             aria-expanded={open ? "true" : undefined}
           >
-            <Avatar sx={{ width: 32, height: 32 }}></Avatar>
+            <Avatar sx={{ width: 40, height: 40 }}></Avatar>
           </IconButton>
         </Tooltip>
       </Box>

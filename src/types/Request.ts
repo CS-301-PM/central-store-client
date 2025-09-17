@@ -1,3 +1,5 @@
+import { Role } from "./User";
+
 export type StatusType =
   | "pending"
   | "approved"
@@ -40,23 +42,18 @@ export type RequestObj = {
   from: {
     userId?: string;
     departmentName?: string;
-    departmentId?: string;
   };
 };
 
 export type FetchedRequestObj = {
-  requestId: string;
+  requestId?: string; //*
   blockchainId?: string;
-  item: string;
-  quantity: number;
-  priority: PriorityType;
-  reason: string;
-  status: StatusType;
-  from: {
-    userId?: string;
-    departmentId?: string;
-    departmentName?: string;
-  };
+  item?: string; //*
+  quantity?: number; //*
+  priority?: PriorityType; //*
+  reason?: string; //*
+  status?: StatusType; //*
+  department?: Role; //*
   createdAt?: string;
   updatedAt?: string;
 };

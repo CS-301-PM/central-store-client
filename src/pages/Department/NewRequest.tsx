@@ -71,7 +71,10 @@ function NewRequest() {
 
   return (
     <div className="m-2">
-      <RequestTableHeader subtitle="Here you can create and make a new request">
+      <RequestTableHeader
+        title="Make a new request"
+        subtitle="Here you can create and make a new request"
+      >
         <Link to={"/department/requests"}>
           <AppButton variant="contained" color="primary">
             All requests
