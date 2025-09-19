@@ -1,11 +1,9 @@
 import { Link } from "react-router-dom";
 import RequestTableHeader from "../../components/other/RequestTableHeader";
-import AppButton from "../../components/other/AppButton";
 import UsersTablePage from "./Users";
 import { Role } from "../../types/User";
 import ReusableModal from "../../components/other/Modal";
-// import { useUserContext } from "../../hooks/UserContextHook";
-// import { useEffect } from "react";
+import NewUserForm from "../Auth/NewUserForm";
 
 function Admin({ role }: { role: Role }) {
   return (
@@ -14,11 +12,9 @@ function Admin({ role }: { role: Role }) {
         title="Manage all users"
         subtitle="View and manage users."
       >
-        <Link to={"/admin/new_user"}>
-          <AppButton variant="contained" color="primary">
-            New User
-          </AppButton>
-        </Link>
+        <ReusableModal buttonLabel="New User" title="ADD A NEW USER">
+          <NewUserForm isNew={true} />
+        </ReusableModal>
       </RequestTableHeader>
       <div className="mt-4">
         <UsersTablePage role="role" />

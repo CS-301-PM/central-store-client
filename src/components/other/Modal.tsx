@@ -6,6 +6,12 @@ type ReusableModalProps = {
   title: string;
   description?: string;
   children?: React.ReactNode;
+  isModalOpen?: boolean;
+  onClose?: () => void;
+  color?: string;
+  variant?: "contained" | "outlined" | "text";
+  disabled?: boolean;
+  handleMenu?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
 const style = {
@@ -25,14 +31,39 @@ export default function ReusableModal({
   title,
   description,
   children,
+  isModalOpen,
+  onClose,
+  color,
+  disabled,
+  variant,
+  handleMenu,
 }: ReusableModalProps) {
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const [internalOpen, setInternalOpen] = React.useState(false);
+
+  const open = isModalOpen !== undefined ? isModalOpen : internalOpen;
+  const handleOpen = () => setInternalOpen(true);
+  const handleClose = () => {
+    setInternalOpen(false);
+    onClose?.();
+  };
 
   return (
     <>
-      <Button onClick={handleOpen} variant="contained">
+      <Button
+        id="status-button"
+        aria-controls={open ? "status-menu" : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? "true" : undefined}
+        color={color}
+        onClick={(event) => {
+          if (isModalOpen === undefined) {
+            handleOpen();
+          }
+          handleMenu?.(event);
+        }}
+        variant={variant}
+        disabled={disabled}
+      >
         {buttonLabel}
       </Button>
       <Modal open={open} onClose={handleClose}>
