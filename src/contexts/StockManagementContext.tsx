@@ -5,7 +5,7 @@ import {
   StockState,
   //   initialState,
 } from "../reducers/StockManagementReducer";
-import { simpleStocks } from "../utils/Constants";
+// import { simpleStocks } from "../utils/Constants";
 
 export type StockManagementContextType = {
   state: StockState;
@@ -15,7 +15,6 @@ export type StockManagementContextType = {
   updateStock: (stock: Stock) => void;
   deleteStock: (id: string) => void;
   moveStock: (id: string, newLocation: string) => void;
-  reportStock: (data: any) => void;
 };
 
 export const StockManagementContext = createContext<
@@ -34,29 +33,169 @@ export const StockManagementProvider = ({
 }) => {
   const [state, dispatch] = useReducer(stockReducer, initialState);
 
-  const listAllStocks = (stocks: Stock[]) =>
-    dispatch({
-      type: "LIST_ALL_STOCK",
-      payload: simpleStocks,
-    });
+  const listAllStocks = async () => {
+    const session = JSON.parse(localStorage.getItem("user") || "{}");
+    const accessToken = session.access;
+    const URL = `${import.meta.env.VITE_SERVER}/api/stocks/`;
+
+    try {
+      const response = await fetch(URL, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch stocks: ${response.status}`);
+      }
+
+      const stocksData = await response.json();
+
+      // console.log(stocksData);
+
+      dispatch({
+        type: "LIST_ALL_STOCK",
+        payload: stocksData.data, // the fetched stock list
+      });
+
+      return stocksData;
+    } catch (error) {
+      console.error("Error fetching stocks:", error);
+      throw error;
+    }
+  };
 
   const getOneStock = (stock: Stock) =>
     dispatch({ type: "GET_ONE_STOCK", payload: stock });
 
-  const addStock = (stock: Stock) =>
-    dispatch({ type: "ADD_NEW_STOCK", payload: stock });
+  const addStock = async (stock: Stock) => {
+    const session = JSON.parse(localStorage.getItem("user") || "{}");
+    const accessToken = session.access;
+    const URL = `${import.meta.env.VITE_SERVER}/api/stocks/create/`;
 
-  const updateStock = (stock: Stock) =>
-    dispatch({ type: "UPDATE_STOCK", payload: stock });
+    try {
+      const response = await fetch(URL, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(stock),
+      });
 
-  const deleteStock = (id: string) =>
-    dispatch({ type: "DELETE_STOCK", payload: id });
+      if (!response.ok) {
+        throw new Error(`Failed to add stock: ${response.status}`);
+      }
 
-  const moveStock = (id: string, newLocation: string) =>
-    dispatch({ type: "MOVE_STOCK", payload: { id, newLocation } });
+      const addedStock = await response.json();
 
-  const reportStock = (data: any) =>
-    dispatch({ type: "REPORT_STOCK", payload: data });
+      dispatch({ type: "ADD_NEW_STOCK", payload: addedStock });
+      return addedStock;
+    } catch (error) {
+      console.error("Error adding stock:", error);
+      throw error;
+    }
+  };
+
+  const updateStock = async (stock: Stock) => {
+    const session = JSON.parse(localStorage.getItem("user") || "{}");
+    const accessToken = session.access;
+    const URL = `${import.meta.env.VITE_SERVER}/api/stocks/${stock.stockId}/`;
+
+    try {
+      const response = await fetch(URL, {
+        method: "PUT", // or PATCH if your API supports partial update
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(stock),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to update stock: ${response.status}`);
+      }
+
+      const updatedStock = await response.json();
+      dispatch({ type: "UPDATE_STOCK", payload: updatedStock });
+      return updatedStock;
+    } catch (error) {
+      console.error("Error updating stock:", error);
+      throw error;
+    }
+  };
+
+  const deleteStock = async (id: string) => {
+    const session = JSON.parse(localStorage.getItem("user") || "{}");
+    const accessToken = session.access;
+    const URL = `${import.meta.env.VITE_SERVER}/api/stocks/${id}/`;
+
+    try {
+      const response = await fetch(URL, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to delete stock: ${response.status}`);
+      }
+
+      // Some APIs return 204 No Content
+      let data = null;
+      if (response.status !== 204) {
+        data = await response.json();
+      }
+
+      dispatch({ type: "DELETE_STOCK", payload: id });
+      return data;
+    } catch (error) {
+      console.error("Error deleting stock:", error);
+      throw error;
+    }
+  };
+
+  const moveStock = async (id: string, newLocation: string) => {
+    const session = JSON.parse(localStorage.getItem("user") || "{}");
+    const accessToken = session.access;
+    const URL = `${import.meta.env.VITE_SERVER}/api/stocks/${id}/move/`;
+
+    try {
+      const response = await fetch(URL, {
+        method: "PATCH", // or PUT depending on your backend
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ location: newLocation }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to move stock: ${response.status}`);
+      }
+
+      const updatedStock = await response.json();
+
+      dispatch({
+        type: "MOVE_STOCK",
+        payload: { id, newLocation: updatedStock.location },
+      });
+
+      return updatedStock;
+    } catch (error) {
+      console.error("Error moving stock:", error);
+      throw error;
+    }
+  };
 
   return (
     <StockManagementContext.Provider
@@ -68,7 +207,6 @@ export const StockManagementProvider = ({
         updateStock,
         deleteStock,
         moveStock,
-        reportStock,
       }}
     >
       {children}

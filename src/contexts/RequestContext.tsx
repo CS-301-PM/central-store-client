@@ -5,7 +5,7 @@ import {
   RequestState,
 } from "../reducers/RequestsReducer";
 import { FetchedRequestObj, RequestObj, StatusType } from "../types/Request";
-import { mockRequests } from "../utils/Constants";
+// import { mockRequests } from "../utils/Constants";
 
 export type RequestManagementContextType = {
   state: RequestState;
@@ -25,29 +25,111 @@ export const RequestManagementProvider = ({
 }) => {
   const [state, dispatch] = useReducer(requestReducer, initialState);
 
-  const makeRequest = (newRequest: RequestObj) => {
+  const makeRequest = async (newRequest: RequestObj) => {
+    const session = JSON.parse(localStorage.getItem("user") || "{}");
+    const accessToken = session.access;
+    const URL = `${import.meta.env.VITE_SERVER}api/requests/`;
+
     state.loading = true;
-    // add the responded req from the server on the payload
-    const respondedRequest: FetchedRequestObj = { ...newRequest };
-    dispatch({ type: "MAKE_REQUEST", payload: respondedRequest });
-    state.loading = true;
+
+    try {
+      const response = await fetch(URL, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(newRequest),
+      });
+
+      if (!response.ok)
+        throw new Error(`Failed to make request: ${response.status}`);
+
+      const respondedRequest: FetchedRequestObj = await response.json();
+
+      dispatch({ type: "MAKE_REQUEST", payload: respondedRequest });
+      return respondedRequest;
+    } catch (error) {
+      console.error("Error making request:", error);
+      throw error;
+    } finally {
+      state.loading = false;
+    }
   };
 
-  const getAllRequests = () => {
+  const getAllRequests = async () => {
+    const session = JSON.parse(localStorage.getItem("user") || "{}");
+    const accessToken = session.access;
+    const URL = `${import.meta.env.VITE_SERVER}/api/requests/`;
+
     state.loading = true;
-    dispatch({ type: "LIST_ALL_REQUESTS", payload: mockRequests });
-    state.loading = false;
+
+    try {
+      const response = await fetch(URL, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+
+      if (!response.ok)
+        throw new Error(`Failed to fetch requests: ${response.status}`);
+
+      const requests: FetchedRequestObj[] = await response.json();
+
+      dispatch({ type: "LIST_ALL_REQUESTS", payload: requests });
+      return requests;
+    } catch (error) {
+      console.error("Error fetching requests:", error);
+      throw error;
+    } finally {
+      state.loading = false;
+    }
   };
 
-  const updateRequestStatus = (requestId: string, statusType: StatusType) => {
-    // send the update to the server.
-    console.log(requestId, statusType);
+  const updateRequestStatus = async (
+    requestId: string,
+    statusType: StatusType
+  ) => {
+    const session = JSON.parse(localStorage.getItem("user") || "{}");
+    const accessToken = session.access;
+    const URL = `${
+      import.meta.env.VITE_SERVER
+    }/api/requests/${requestId}/status/`;
+
     state.loading = true;
-    dispatch({
-      type: "UPDATE_REQUEST_STATUS",
-      payload: { requestId, statusType },
-    });
-    state.loading = false;
+
+    try {
+      const response = await fetch(URL, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ status: statusType }),
+      });
+
+      if (!response.ok)
+        throw new Error(`Failed to update status: ${response.status}`);
+
+      const updatedRequest: FetchedRequestObj = await response.json();
+
+      dispatch({
+        type: "UPDATE_REQUEST_STATUS",
+        payload: { requestId, statusType },
+      });
+
+      return updatedRequest;
+    } catch (error) {
+      console.error("Error updating request status:", error);
+      throw error;
+    } finally {
+      state.loading = false;
+    }
   };
 
   return (
