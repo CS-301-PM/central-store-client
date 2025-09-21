@@ -23,7 +23,7 @@ export default function UserRegistration() {
         title="Register new user"
         subtitle="Register a new system user."
       >
-        <Link to={"/admin"}>
+        <Link to={"/admin/users"}>
           <AppButton variant="contained" color="primary">
             Back to Users
           </AppButton>
