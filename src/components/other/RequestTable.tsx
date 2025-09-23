@@ -27,6 +27,7 @@ export default function EnhancedTable({ role }: { role: Role }) {
   const { getAllRequests, state, updateRequestStatus } =
     useRequestManagementContext();
   const { requests, loading } = state;
+  // console.log(requests);
 
   const [rows, setRows] = React.useState<FetchedRequestObj[]>([]);
   const [filterStatus, setFilterStatus] = React.useState<StatusType | "All">(
@@ -63,11 +64,15 @@ export default function EnhancedTable({ role }: { role: Role }) {
     sortAsc ? a.quantity - b.quantity : b.quantity - a.quantity
   );
 
+  // const sortedRows = [];
   const handleStatusChange = async (
     requestId: string,
     newStatus: StatusType
   ) => {
     if (role === "STORES_MANAGER" || role === "PROCUREMENT_OFFICER") {
+      if (newStatus == "IN PROGRESS") {
+        newStatus = "IN_PROGRESS";
+      }
       await updateRequestStatus(requestId, newStatus);
     } else {
       // alert("STORE'S MANAGER CAN APPROVE");
@@ -81,7 +86,7 @@ export default function EnhancedTable({ role }: { role: Role }) {
           display: "flex",
           justifyContent: "flex-start",
           mb: 2,
-          flexWrap: "wrap",
+          // flexWrap: "wrap",
           gap: 2,
         }}
       >
@@ -122,6 +127,7 @@ export default function EnhancedTable({ role }: { role: Role }) {
               <TableCell align="right">Department</TableCell>
               <TableCell align="left">Priority</TableCell>
               <TableCell align="left">Reason</TableCell>
+              <TableCell align="left">Time</TableCell>
               <TableCell align="left">Status</TableCell>
 
               {/* <TableCell align="center">Status</TableCell> */}
@@ -130,28 +136,27 @@ export default function EnhancedTable({ role }: { role: Role }) {
           <TableBody>
             {sortedRows.map((request, index) => (
               <TableRow
-                key={request.requestId}
+                key={request.id}
                 sx={{
                   backgroundColor: index % 2 === 0 ? "#fff" : "#fafafa",
                   "&:hover": { backgroundColor: "#e3f2fd" },
                 }}
               >
                 <TableCell component="th" scope="row">
-                  {request.requestId}
+                  {request.id}
                 </TableCell>
                 <TableCell align="left">{request.item}</TableCell>
                 <TableCell align="left">{request.quantity}</TableCell>
-                <TableCell align="right">
-                  {request.from.departmentName}
-                </TableCell>
+                <TableCell align="right">{request.department}</TableCell>
                 <TableCell align="left">{request.priority}</TableCell>
                 <TableCell align="left">{request.reason}</TableCell>
+                <TableCell align="left">{request.createdAt}</TableCell>
 
                 <TableCell align="left">
                   <StatusMenu
                     status={request.status}
                     onChange={(newStatus) =>
-                      handleStatusChange(request.requestId, newStatus)
+                      handleStatusChange(request.id, newStatus)
                     }
                   />
                 </TableCell>

@@ -5,8 +5,8 @@ import "./loginForm.css";
 import { useUserContext } from "../../hooks/UserContextHook";
 
 function LoginForm() {
-  const [employeeId, setEmployeeId] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [employeeId, setEmployeeId] = React.useState("admin");
+  const [password, setPassword] = React.useState("11111111");
   const [errors, setErrors] = React.useState<{
     employeeId?: string;
     password?: string;
@@ -34,7 +34,8 @@ function LoginForm() {
     e.preventDefault();
     if (!validate()) return;
 
-    await signIn({ employeeNumber: employeeId, password });
+    await signIn({ username: employeeId, password });
+    // window.location.reload(true);
     // TODO: Add login logic (API call, context update, etc.)
   };
 

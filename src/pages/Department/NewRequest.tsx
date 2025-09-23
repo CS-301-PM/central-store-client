@@ -6,8 +6,9 @@ import RequestTableHeader from "../../components/other/RequestTableHeader";
 import { Link } from "react-router-dom";
 import { useUserContext } from "../../hooks/UserContextHook";
 import Loading from "../../components/other/Loading";
-import { priorityLevels, PriorityType, RequestObj } from "../../types/Request";
+import { priorityLevels, PriorityType } from "../../types/Request";
 import { useRequestManagementContext } from "../../hooks/useRequestHook";
+// import { useStockManagementContext } from "../../hooks/useStockManagementContext";
 
 function NewRequest() {
   const [item, setItem] = React.useState("");
@@ -16,14 +17,18 @@ function NewRequest() {
   const [priority, setPriority] = React.useState<PriorityType>("Low");
   const [requesterId, setRequesterId] = React.useState("");
   const [department, setDepartment] = React.useState("Finance");
+  const [stockId, setStockId] = React.useState("1");
 
   const { user, isLoading } = useUserContext();
   const { makeRequest, state } = useRequestManagementContext();
+  // const { listAllStocks,} = useStockManagementContext();
+
   const { requests, loading, error } = state;
 
   React.useEffect(() => {
-    setRequesterId(user?.user?.employeeId ?? "");
+    setRequesterId(user?.user?.username ?? "");
     setDepartment(user?.user?.department ?? "");
+    // listAllStocks();
   }, [user?.user]);
 
   if (isLoading) {
@@ -42,6 +47,8 @@ function NewRequest() {
     { value: "Markers", label: "Markers" },
   ];
 
+  // console.log(state);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -50,23 +57,21 @@ function NewRequest() {
       return;
     }
 
-    const newRequest: RequestObj = {
-      item,
-      quantity: Number(quantity),
-      reason,
-      priority,
-      from: {
-        userId: requesterId,
-        departmentName: department,
-      },
-    };
-
-    await makeRequest(newRequest);
-    setItem("");
-    setQuantity("");
-    setReason("");
-    setPriority("Low");
-    setRequesterId("");
+    await makeRequest({
+      user_id: user?.user?.id,
+      stock_id: stockId,
+      item_name: item,
+      quantity: parseInt(quantity),
+      priority: priority,
+      reason: reason,
+      department: user?.user?.department,
+      //   "blockchain_address": "0x123abc456def"
+    });
+    // setItem("");
+    // setQuantity("");
+    // setReason("");
+    // setPriority("LOW");
+    // setRequesterId("");
   };
 
   return (

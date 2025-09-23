@@ -5,7 +5,14 @@ import {
   StockState,
   //   initialState,
 } from "../reducers/StockManagementReducer";
+import {
+  sampleStocks,
+  StockAddingType,
+  StockFetchedType,
+} from "../types/Stocks";
 // import { simpleStocks } from "../utils/Constants";
+import { v4 as uuidv4 } from "uuid";
+import moment from "moment";
 
 export type StockManagementContextType = {
   state: StockState;
@@ -35,8 +42,8 @@ export const StockManagementProvider = ({
 
   const listAllStocks = async () => {
     const session = JSON.parse(localStorage.getItem("user") || "{}");
-    const accessToken = session.access;
-    const URL = `${import.meta.env.VITE_SERVER}/api/stocks/`;
+    const accessToken = session.token;
+    const URL = `${import.meta.env.VITE_SERVER}api/stocks/all`;
 
     try {
       const response = await fetch(URL, {
@@ -54,14 +61,14 @@ export const StockManagementProvider = ({
 
       const stocksData = await response.json();
 
-      // console.log(stocksData);
+      // console.log("STOCKS", stocksData.stocks);
 
       dispatch({
         type: "LIST_ALL_STOCK",
-        payload: stocksData.data, // the fetched stock list
+        payload: stocksData.stocks, //stocksData.data, // the fetched stock list
       });
 
-      return stocksData;
+      // return stocksData;
     } catch (error) {
       console.error("Error fetching stocks:", error);
       throw error;
@@ -71,10 +78,10 @@ export const StockManagementProvider = ({
   const getOneStock = (stock: Stock) =>
     dispatch({ type: "GET_ONE_STOCK", payload: stock });
 
-  const addStock = async (stock: Stock) => {
+  const addStock = async (stockToAdd: StockAddingType) => {
     const session = JSON.parse(localStorage.getItem("user") || "{}");
-    const accessToken = session.access;
-    const URL = `${import.meta.env.VITE_SERVER}/api/stocks/create/`;
+    const accessToken = session.token;
+    const URL = `${import.meta.env.VITE_SERVER}api/stocks/add`;
 
     try {
       const response = await fetch(URL, {
@@ -84,17 +91,20 @@ export const StockManagementProvider = ({
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify(stock),
+        body: JSON.stringify(stockToAdd),
       });
 
       if (!response.ok) {
         throw new Error(`Failed to add stock: ${response.status}`);
       }
 
+      // ✅ Parse response body
       const addedStock = await response.json();
-
+      console.log(addedStock);
+      // ✅ Dispatch with the new stock
       dispatch({ type: "ADD_NEW_STOCK", payload: addedStock });
-      return addedStock;
+
+      return addedStock; // optional: return it to the caller
     } catch (error) {
       console.error("Error adding stock:", error);
       throw error;
@@ -122,8 +132,9 @@ export const StockManagementProvider = ({
       }
 
       const updatedStock = await response.json();
+      console.log(updatedStock);
       dispatch({ type: "UPDATE_STOCK", payload: updatedStock });
-      return updatedStock;
+      // return updatedStock;
     } catch (error) {
       console.error("Error updating stock:", error);
       throw error;

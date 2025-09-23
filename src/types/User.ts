@@ -32,8 +32,8 @@ export type UserState = {
 };
 
 export type UserSignIn = {
-  employeeNumber: string;
-  password: string;
+  username?: string;
+  password?: string;
 };
 export type UserSignUp = {} & UserSignIn & {
     fullname: string;
@@ -43,12 +43,15 @@ export type UserSignUp = {} & UserSignIn & {
   };
 
 export type UserRegistration = {
-  firstname?: string;
-  lastname?: string;
-  employeeId?: string;
-  department?: string;
+  first_name?: string;
+  last_name?: string;
   role: Role;
-  password?: string;
+  username?: string;
+  password: string;
+  phone_number?: string;
+  department?: string;
+  is_staff?: boolean;
+  email?: string;
 };
 
 type ErrorBody = {

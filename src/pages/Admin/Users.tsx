@@ -37,16 +37,17 @@ export default function UsersTablePage() {
       : allUsers.filter((user) => user.role === filterRole);
 
   const userColumns: Column<FetchedUser>[] = [
-    { key: "employeeId", label: "Employee ID" },
+    { key: "id", label: "ID" },
+    { key: "blockchain_address", label: "blockchain address" },
+
     {
-      key: "firstName",
+      key: "first_name",
       label: "Name",
-      render: (_, row) => `${row.firstName} ${row.lastName}`,
+      render: (_, row) => `${row.username}`,
     },
     { key: "email", label: "Email" },
     { key: "role", label: "Role" },
     { key: "department", label: "Department" },
-    { key: "status", label: "Status" },
     {
       key: "actions",
       label: "Actions",

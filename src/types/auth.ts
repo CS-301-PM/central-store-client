@@ -11,13 +11,12 @@ import { Role } from "./User";
 export interface FetchedUser {
   id?: string;
   role: Role;
-  firstName: string;
-  lastName: string;
+  last_name?: string;
+  first_name?: string;
   email?: string;
-  employeeId?: string;
+  username?: string;
   department?: Department | "";
-  status?: "active" | "inactive";
-  blockchainId?: string;
+  blockchain_address?: string;
 }
 
 export type AuthUserState = {
@@ -32,8 +31,9 @@ export type AuthUserState = {
 };
 
 export type UserSignIn = {
-  employeeId: string;
-  email: string;
+  username?: string;
+  email?: string;
+  password?: string;
 };
 
 export type UserSignUp = {} & UserSignIn & {

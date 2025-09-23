@@ -27,8 +27,8 @@ export const RequestManagementProvider = ({
 
   const makeRequest = async (newRequest: RequestObj) => {
     const session = JSON.parse(localStorage.getItem("user") || "{}");
-    const accessToken = session.access;
-    const URL = `${import.meta.env.VITE_SERVER}api/requests/`;
+    const accessToken = session.token;
+    const URL = `${import.meta.env.VITE_SERVER}api/requests/make`;
 
     state.loading = true;
 
@@ -60,8 +60,8 @@ export const RequestManagementProvider = ({
 
   const getAllRequests = async () => {
     const session = JSON.parse(localStorage.getItem("user") || "{}");
-    const accessToken = session.access;
-    const URL = `${import.meta.env.VITE_SERVER}/api/requests/`;
+    const accessToken = session.token;
+    const URL = `${import.meta.env.VITE_SERVER}api/requests/all`;
 
     state.loading = true;
 
@@ -74,14 +74,14 @@ export const RequestManagementProvider = ({
         },
         credentials: "include",
       });
+      if (!response.ok) {
+        return;
+      }
 
-      if (!response.ok)
-        throw new Error(`Failed to fetch requests: ${response.status}`);
-
-      const requests: FetchedRequestObj[] = await response.json();
-
-      dispatch({ type: "LIST_ALL_REQUESTS", payload: requests });
-      return requests;
+      const res = await response.json();
+      // const requests: FetchedRequestObj[] = res.data;
+      dispatch({ type: "LIST_ALL_REQUESTS", payload: res.requests });
+      return res.data;
     } catch (error) {
       console.error("Error fetching requests:", error);
       throw error;
@@ -95,16 +95,14 @@ export const RequestManagementProvider = ({
     statusType: StatusType
   ) => {
     const session = JSON.parse(localStorage.getItem("user") || "{}");
-    const accessToken = session.access;
-    const URL = `${
-      import.meta.env.VITE_SERVER
-    }/api/requests/${requestId}/status/`;
+    const accessToken = session.token;
+    const URL = `${import.meta.env.VITE_SERVER}api/requests/edit/${requestId}`;
 
     state.loading = true;
 
     try {
       const response = await fetch(URL, {
-        method: "PATCH",
+        method: "PUT",
         headers: {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
@@ -117,6 +115,8 @@ export const RequestManagementProvider = ({
         throw new Error(`Failed to update status: ${response.status}`);
 
       const updatedRequest: FetchedRequestObj = await response.json();
+
+      console.log(updatedRequest);
 
       dispatch({
         type: "UPDATE_REQUEST_STATUS",

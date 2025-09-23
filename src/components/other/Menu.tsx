@@ -12,26 +12,27 @@ type StatusMenuProps = {
 };
 
 const statusOptions: StatusType[] = [
-  "approved",
-  "rejected",
-  "in progress",
-  "fulfilled",
-  "waiting for supply",
+  "APPROVED",
+  "REJECTED",
+  "IN PROGRESS",
+  "FULFILLED",
+  "PENDING",
 ];
 
 const getStatusColor = (
   status: StatusType
 ): "primary" | "success" | "error" | "warning" | "info" | "inherit" => {
   switch (status) {
-    case "pending":
+    case "PENDING":
       return "primary";
-    case "approved":
+    case "APPROVED":
       return "success";
-    case "rejected":
+    case "REJECTED":
       return "error";
-    case "in progress":
+    case "IN PROGRESS":
+    case "IN_PROGRESS":
       return "warning";
-    case "fulfilled":
+    case "FULFILLED":
       return "info";
     default:
       return "inherit";
@@ -52,7 +53,7 @@ export default function StatusMenu({ status, onChange }: StatusMenuProps) {
 
   const handleSelect = (newStatus: StatusType) => {
     onChange(newStatus);
-    if (newStatus === "rejected") {
+    if (newStatus === "REJECTED") {
       setIsModalOpen(true);
     } else {
       handleClose();
@@ -66,12 +67,12 @@ export default function StatusMenu({ status, onChange }: StatusMenuProps) {
       <ReusableModal
         title="Reason for rejecting."
         buttonLabel={status}
-        isModalOpen={status === "rejected" && isModalOpen}
+        isModalOpen={status === "REJECTED" && isModalOpen}
         onClose={() => setIsModalOpen(false)}
         color={getStatusColor(status)}
         variant="contained"
         handleMenu={
-          status === "fulfilled" || status === "rejected"
+          status === "FULFILLED" || status === "REJECTED"
             ? undefined
             : handleClick
         }
@@ -79,7 +80,7 @@ export default function StatusMenu({ status, onChange }: StatusMenuProps) {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            alert(reason);
+            // alert(reason);
             // API HERE
           }}
         >

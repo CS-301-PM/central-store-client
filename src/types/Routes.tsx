@@ -54,18 +54,18 @@ export const dashboardRoutes: DashboardRoutes = {
       label: "Dashboard",
       icon: <MdDashboard />,
     },
-    {
-      to: "/manager/users",
-      value: "users",
-      label: "Users",
-      icon: <FaUsers />,
-    },
-    {
-      to: "/manager/new_user",
-      value: "new_user",
-      label: "New user",
-      icon: <FaUserPlus />,
-    },
+    // {
+    //   to: "/manager/users",
+    //   value: "users",
+    //   label: "Users",
+    //   icon: <FaUsers />,
+    // },
+    // {
+    //   to: "/manager/new_user",
+    //   value: "new_user",
+    //   label: "New user",
+    //   icon: <FaUserPlus />,
+    // },
     {
       to: "/manager/stocks",
       value: "stocks",

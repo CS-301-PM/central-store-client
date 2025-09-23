@@ -6,14 +6,17 @@ import App from "./App.tsx";
 import { UserContextProvider } from "./contexts/UserContext.tsx";
 import { RequestManagementProvider } from "./contexts/RequestContext.tsx";
 import { StockManagementProvider } from "./contexts/StockManagementContext.tsx";
+import { BlockchainContextProvider } from "./contexts/BlockchainContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <RequestManagementProvider>
       <StockManagementProvider>
-        <UserContextProvider>
-          <App />
-        </UserContextProvider>
+        <BlockchainContextProvider>
+          <UserContextProvider>
+            <App />
+          </UserContextProvider>
+        </BlockchainContextProvider>
       </StockManagementProvider>
     </RequestManagementProvider>
   </StrictMode>

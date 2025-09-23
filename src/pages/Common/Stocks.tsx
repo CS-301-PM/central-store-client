@@ -22,7 +22,12 @@ export default function StockTablePage({ role }: { role: Role }) {
         title="All Stocks"
         subtitle="All stocks that were in and their current level"
       >
-        <ReusableModal buttonLabel="ADD STOCK" title="NEW STOCK">
+        <ReusableModal
+          buttonLabel="ADD STOCK"
+          title="NEW STOCK"
+          color="primary"
+          variant="contained"
+        >
           <AddStocks />
         </ReusableModal>
       </RequestTableHeader>

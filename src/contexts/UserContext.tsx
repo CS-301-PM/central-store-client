@@ -6,7 +6,7 @@ import {
   AuthUserState,
   FetchedUser,
 } from "../types/auth";
-import axios from "axios";
+// import axios from "axios";
 
 import { userReducer } from "../reducers/UserReducer";
 import { UserContext } from "../hooks/UserContextHook";
@@ -18,80 +18,24 @@ const initialAuthUserState: AuthUserState = {
   departments: null,
 };
 
-const users: FetchedUser[] = [
-  {
-    id: "1",
-    employeeId: "UC0000001",
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@company.com",
-    role: "ADMIN",
-    department: "finance",
-    blockchainId: "bc-101",
-    status: "active",
-  },
-  {
-    id: "2",
-    employeeId: "UC0000002",
-    firstName: "Alice",
-    lastName: "Smith",
-    email: "alice.smith@company.com",
-    role: "STORES_MANAGER",
-    department: "human-resources",
-    blockchainId: "bc-102",
-    status: "active",
-  },
-  {
-    id: "3",
-    employeeId: "UC0000003",
-    firstName: "Michael",
-    lastName: "Brown",
-    email: "michael.brown@company.com",
-    role: "PROCUREMENT_OFFICER",
-    department: "ict",
-    blockchainId: "bc-103",
-    status: "active",
-  },
-  {
-    id: "4",
-    employeeId: "UC0000004",
-    firstName: "Sophia",
-    lastName: "Johnson",
-    email: "sophia.johnson@company.com",
-    role: "PROCUREMENT_OFFICER",
-    department: "library",
-    blockchainId: "bc-104",
-    status: "inactive",
-  },
-  {
-    id: "5",
-    employeeId: "UC0000005",
-    firstName: "David",
-    lastName: "Lee",
-    email: "david.lee@company.com",
-    role: "DEPARTMENT_DEAN",
-    department: "human-resources",
-    blockchainId: "bc-105",
-    status: "active",
-  },
-];
-
 export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(userReducer, initialAuthUserState);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<ErrorResponse | null>(null);
   const preUrl = "/api/auth";
+
   useEffect(() => {
     const checkUserAccessStatus = async () => {
       setIsLoading(true);
       try {
         const session = JSON.parse(localStorage.getItem("user") || "{}");
-        const accessToken = session.access;
+        const accessToken = session.token;
+
         // const user = session.user;
-        const URL = `${import.meta.env.VITE_SERVER}${preUrl}/check-auth/`;
+        const URL = `${import.meta.env.VITE_SERVER}api/user/signed`;
 
         const response = await fetch(URL, {
-          method: "POST",
+          method: "GET",
           credentials: "include",
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -104,16 +48,13 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
         }
 
         const res = await response.json();
+
         const user = res.user;
-
-        if (user.role == "") {
-          user.role = "ADMIN";
-        }
-
         dispatch({
           type: "SIGNIN",
           payload: user,
         });
+        setIsLoading(false);
       } catch {
         dispatch({ type: "SIGNOUT" });
         setError({
@@ -135,7 +76,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
 
   const signUp = async (userSignUp: UserSignUp) => {
     setIsLoading(true);
-    const URL = `${import.meta.env.VITE_SERVER}/api/auth/signup`;
+    const URL = `${import.meta.env.VITE_SERVER}api/user/signup`;
     const response = await fetch(URL, {
       method: "POST",
       credentials: "include",
@@ -156,7 +97,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
 
   const signIn = async (userSignIn: UserSignIn) => {
     setIsLoading(true);
-    const URL = `${import.meta.env.VITE_SERVER}${preUrl}/login/`;
+    const URL = `${import.meta.env.VITE_SERVER}api/user/signin`;
     const response = await fetch(URL, {
       method: "POST",
       credentials: "include",
@@ -175,6 +116,11 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
     // const accessToken = res.access;
     const user = res.user;
 
+    if (user.role == "") {
+      user.role = "ADMIN";
+    }
+    user.role = user.role.toUpperCase();
+
     // localStorage.setItem("accessToken", accessToken);
     // localStorage.setItem("user", res.JSON.stringify());
     localStorage.setItem("user", JSON.stringify(res));
@@ -190,16 +136,16 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const deleteAccount = async (userDeleteAccount: AuthUserState) => {
-    const URL = `${import.meta.env.VITE_SERVER}/`;
-    dispatch({ type: "DELETE", payload: userDeleteAccount });
+    // const URL = `${import.meta.env.VITE_SERVER}/`;
+    // dispatch({ type: "DELETE", payload: userDeleteAccount });
   };
 
   const updateUser = async (user: FetchedUser) => {
     setIsLoading(true);
 
-    const URL = `${import.meta.env.VITE_SERVER}${preUrl}/users/${user.id}/`;
+    const URL = `${import.meta.env.VITE_SERVER}api/user/modify/${user.id}`;
     const session = JSON.parse(localStorage.getItem("user") || "{}");
-    const accessToken = session.access;
+    const accessToken = session.token;
 
     try {
       const response = await fetch(URL, {
@@ -229,9 +175,9 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
 
   const getAllUsers = async (): Promise<FetchedUser[]> => {
     setIsLoading(true);
-    const URL = `${import.meta.env.VITE_SERVER}${preUrl}/users/`;
+    const URL = `${import.meta.env.VITE_SERVER}api/user/all`;
     const session = JSON.parse(localStorage.getItem("user") || "{}");
-    const accessToken = session.access;
+    const accessToken = session.token;
     const response = await fetch(URL, {
       method: "GET",
       credentials: "include",
@@ -248,7 +194,8 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
     }
 
     setError(null);
-    const users: FetchedUser[] = await response.json();
+    const rawUsers = await response.json();
+    const users: FetchedUser[] = rawUsers.users;
     dispatch({ type: "GET_ALL_USERS", payload: users });
     setIsLoading(false);
     return users;
@@ -280,10 +227,11 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(false);
     return departments;
   };
+
   const addUser = async (userToAdd: UserRegistration) => {
-    const URL = `${import.meta.env.VITE_SERVER}${preUrl}/register/`;
+    const URL = `${import.meta.env.VITE_SERVER}api/user/signup`;
     const session = JSON.parse(localStorage.getItem("user") || "{}");
-    const accessToken = session.access;
+    const accessToken = session.token;
 
     try {
       const response = await fetch(URL, {
@@ -310,9 +258,9 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const deleteUser = async (userId: string) => {
-    const URL = `${import.meta.env.VITE_SERVER}${preUrl}/users/${userId}/`;
+    const URL = `${import.meta.env.VITE_SERVER}api/user/delete/${userId}`;
     const session = JSON.parse(localStorage.getItem("user") || "{}");
-    const accessToken = session.access;
+    const accessToken = session.token;
 
     try {
       const response = await fetch(URL, {

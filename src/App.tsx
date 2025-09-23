@@ -11,7 +11,7 @@ import { useUserContext } from "./hooks/UserContextHook";
 import Layout from "./components/layout/Layout";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import NotFoundPage from "./components/other/NotFoundPage";
-import Loading from "./components/other/Loading";
+// import Loading from "./components/other/Loading";
 import Admin from "./pages/Admin/Admin";
 import UserRegistration from "./pages/Auth/UserRegistration";
 import LoginForm from "./pages/Auth/LoginForm";
@@ -26,20 +26,19 @@ import Dashboard from "./pages/Manager/Dashboard";
 import Funds from "./pages/CFO/Funds";
 // Mock authenticated user
 function App() {
-  const { user, isLoading } = useUserContext();
+  const { user } = useUserContext();
   const role = user?.user?.role;
-
   if (user && !user.user) {
     return <LoginForm />;
   }
 
-  if (isLoading) {
-    return (
-      <div className="loadingParentDiv">
-        <Loading />
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div className="loadingParentDiv">
+  //       <Loading />
+  //     </div>
+  //   );
+  // }
 
   if (role) {
     <Navigate to={getRedirectPath(role)} replace />;
@@ -52,10 +51,7 @@ function App() {
               <Route
                 path="admin"
                 element={
-                  <ProtectedRoutes
-                    role={role}
-                    allowedRoles={["ADMIN", "STORES_MANAGER"]}
-                  >
+                  <ProtectedRoutes role={role} allowedRoles={["ADMIN"]}>
                     <Outlet />
                   </ProtectedRoutes>
                 }
@@ -114,11 +110,11 @@ function App() {
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="stocks" element={<StockTablePage role={role} />} />
                 <Route path="requests" element={<Requests role={role} />} />
-                <Route path="users" element={<Admin role={role} />} />
+                {/* <Route path="users" element={<Admin role={role} />} />
                 <Route
                   path="new_user"
                   element={<UserRegistration role={role} />}
-                />
+                /> */}
                 <Route path="logs" element={<Logs role={role} />} />
               </Route>
 

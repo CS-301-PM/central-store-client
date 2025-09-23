@@ -2,35 +2,34 @@ import { useEffect, useState } from "react";
 import DynamicTable from "../../components/other/DynamicTable";
 import RequestTableHeader from "../../components/other/RequestTableHeader";
 import { Role } from "../../types/User";
-import { blockchainLogs } from "../../utils/Constants";
+import { useBlockchainContext } from "../../hooks/useBlockchainContextHook";
 
 export type Log = Record<string, any>;
 
 function Logs({ role }: { role: Role }) {
-  const [logs, setLogs] = useState<Log[]>([]);
+  const [logsList, setLogsList] = useState<Log[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const { getLogs, logs } = useBlockchainContext(); // only get the function
+
   useEffect(() => {
     const fetchLogs = async () => {
-      setLoading(true);
-      setError(null);
       try {
-        // const response = await fetch("/api/logs"); // adjust API endpoint
-        // if (!response.ok) {
-        //   throw new Error("Failed to fetch logs");
-        // }
-        // const data = await response.json();
-        setLogs(blockchainLogs);
+        setLoading(true);
+        setError(null);
+
+        await getLogs();
+        setLogsList(logs || []);
       } catch (err: any) {
-        setError(err.message || "Something went wrong");
+        setError(err.message || "Failed to fetch logs");
       } finally {
         setLoading(false);
       }
     };
 
     fetchLogs();
-  }, []);
+  }, [setLogsList]);
 
   return (
     <div>
@@ -42,7 +41,7 @@ function Logs({ role }: { role: Role }) {
       {loading && <p>Loading logs...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
 
-      {!loading && !error && <DynamicTable data={logs} />}
+      {!loading && !error && <DynamicTable data={logsList} />}
     </div>
   );
 }

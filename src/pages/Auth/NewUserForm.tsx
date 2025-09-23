@@ -20,7 +20,8 @@ function NewUserForm({ isNew = true, userToUpdate }: NewUserProps) {
 
   const [firstName, setFirstName] = React.useState("");
   const [lastName, setLastName] = React.useState("");
-  const [employeeId, setEmployeeId] = React.useState("");
+  const [username, setusername] = React.useState("");
+  const [email, setEmail] = React.useState("");
 
   const [userRole, setUserRole] = React.useState(
     roleOptionsForUserRegistration[1].value
@@ -39,7 +40,9 @@ function NewUserForm({ isNew = true, userToUpdate }: NewUserProps) {
 
     if (!firstName) newErrors.firstName = "First name is required";
     if (!lastName) newErrors.lastName = "Last name is required";
-    if (!employeeId) newErrors.employeeId = "Employee ID is required";
+    if (!username) newErrors.username = "Employee ID is required";
+    if (!email) newErrors.email = "Email is required";
+
     if (isNew) {
       if (!password) newErrors.password = "Password is required";
     }
@@ -51,38 +54,47 @@ function NewUserForm({ isNew = true, userToUpdate }: NewUserProps) {
     if (Object.keys(newErrors).length === 0) {
       if (isNew) {
         await addUser({
-          firstname: firstName,
-          lastname: lastName,
-          role: userRole as import("../../types/User").Role,
-          employeeId,
+          first_name: firstName,
+          last_name: lastName,
+          role: userRole as Role,
+          username,
           password,
+          email,
+          department,
+          is_staff: true,
         });
       } else {
+        // alert(111);
         await updateUser({
-          firstName,
-          lastName,
-          employeeId,
-          role: userRole,
+          first_name: firstName,
+          last_name: lastName,
+          username: username,
+          role: userRole as Role,
+          email: email,
+          id: userToUpdate?.id,
+          is_staff: userToUpdate?.is_staff,
           department: department,
+          blockchain_address: userToUpdate?.blockchain_address,
+          phone_number: userToUpdate?.phone_number,
+          ...(password ? { password } : {}),
         });
       }
-    } else {
-      console.log(newErrors);
     }
   };
 
   useEffect(() => {
     if (!isNew && userToUpdate) {
-      setFirstName(userToUpdate?.firstName);
-      setLastName(userToUpdate?.lastName);
-      setEmployeeId(userToUpdate?.employeeId);
-      setUserRole(userToUpdate?.role);
-      setDepartment(userToUpdate?.role);
+      setFirstName(userToUpdate.first_name);
+      setLastName(userToUpdate.last_name);
+      setusername(userToUpdate.username);
+      setUserRole(userToUpdate.role);
+      setDepartment(userToUpdate.department || departmentOptions[0].value);
+      setEmail(userToUpdate.email || "");
     }
-  }, []);
+  }, [isNew, userToUpdate]);
 
   return (
-    <div className="">
+    <div>
       <form
         onSubmit={handleSubmit}
         className="flex flex-col gap-4 p-4 max-w-md"
@@ -99,12 +111,17 @@ function NewUserForm({ isNew = true, userToUpdate }: NewUserProps) {
           onChange={(e) => setLastName(e.target.value)}
           error={errors.lastName || null}
         />
-
         <InputField
           label="Employee ID"
-          value={employeeId}
-          onChange={(e) => setEmployeeId(e.target.value)}
-          error={errors.employeeId || null}
+          value={username}
+          onChange={(e) => setusername(e.target.value)}
+          error={errors.username || null}
+        />
+        <InputField
+          label="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          error={errors.email || null}
         />
 
         <BasicSelect
