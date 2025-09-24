@@ -24,8 +24,8 @@ function Header() {
         <div className="headerRight">
           <div className="profileId border-0 ps-3 pe-0 rounded">
             <div className="nameAndId">
+              <div className="h6">{`${USER?.blockchain_address}`}</div>
               <div className="h6">{USER?.username}</div>
-              {/* <div>{USER?.role}</div> */}
             </div>
             <AccountMenu />
           </div>

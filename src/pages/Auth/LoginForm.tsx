@@ -36,7 +36,6 @@ function LoginForm() {
 
     await signIn({ username: employeeId, password });
     // window.location.reload(true);
-    // TODO: Add login logic (API call, context update, etc.)
   };
 
   return (
@@ -47,7 +46,7 @@ function LoginForm() {
             label="Employee ID"
             value={employeeId}
             onChange={(e) => setEmployeeId(e.target.value)}
-            error={errors.employeeId || null}
+            error={error?.error || null}
           />
 
           <InputField
@@ -55,7 +54,7 @@ function LoginForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             showToggle={true}
-            error={errors.password || null}
+            error={error?.error || null}
           />
 
           <div className="m-2">
