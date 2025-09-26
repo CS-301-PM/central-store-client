@@ -1,11 +1,17 @@
 import { Link } from "react-router-dom";
 import RequestTableHeader from "../../components/other/RequestTableHeader";
 import AppButton from "../../components/other/AppButton";
-import RequestsPage from "../../components/other/RequestPage";
+// import RequestsPage from "../../components/other/RequestPage";
 import { Role } from "../../types/User";
 import EnhancedTable from "../../components/other/RequestTable";
 
 function Requests({ role }: { role: Role }) {
+  // const { state, listAllStocks } = useStockManagementContext();
+  // const { items } = state;
+
+  // React.useEffect(() => {
+  //   listAllStocks([]);
+  // }, []);
   return (
     <div className="">
       <RequestTableHeader
@@ -22,7 +28,7 @@ function Requests({ role }: { role: Role }) {
           }
         >
           <AppButton variant="contained" color="primary">
-            {role === "DEPARTMENT_DEAN" ? "Make Request" : "Reflresh"}
+            {role === "DEPARTMENT_DEAN" ? "Make Request" : "All"}
           </AppButton>
         </Link>
       </RequestTableHeader>

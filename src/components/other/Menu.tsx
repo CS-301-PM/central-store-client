@@ -5,6 +5,7 @@ import { StatusType } from "../../types/Request";
 import ReusableModal from "./Modal";
 import InputField from "./InputFild";
 import AppButton from "./AppButton";
+import { useUserContext } from "../../hooks/UserContextHook";
 
 type StatusMenuProps = {
   status: StatusType;
@@ -16,7 +17,7 @@ const statusOptions: StatusType[] = [
   "REJECTED",
   "IN PROGRESS",
   "FULFILLED",
-  "PENDING",
+  // "PENDING",
 ];
 
 const getStatusColor = (
@@ -42,6 +43,7 @@ const getStatusColor = (
 export default function StatusMenu({ status, onChange }: StatusMenuProps) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [newState, setNewState] = React.useState<StatusType>(status);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -53,50 +55,64 @@ export default function StatusMenu({ status, onChange }: StatusMenuProps) {
 
   const handleSelect = (newStatus: StatusType) => {
     onChange(newStatus);
+    setNewState(newStatus);
     if (newStatus === "REJECTED") {
-      setIsModalOpen(true);
+      // setIsModalOpen(true);
     } else {
       handleClose();
     }
   };
 
   const [reason, setReason] = React.useState("");
+  const { user } = useUserContext();
+  const role = user?.user?.role;
 
   return (
     <div>
-      <ReusableModal
-        title="Reason for rejecting."
-        buttonLabel={status}
-        isModalOpen={status === "REJECTED" && isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        color={getStatusColor(status)}
-        variant="contained"
-        handleMenu={
-          status === "FULFILLED" || status === "REJECTED"
-            ? undefined
-            : handleClick
-        }
-      >
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            // alert(reason);
-            // API HERE
-          }}
+      {role === "DEPARTMENT_DEAN" ? (
+        <AppButton
+          color={getStatusColor(status)}
+          type="button"
+          variant="contained"
         >
-          <InputField
-            label="Reason"
-            value={reason}
-            type="text"
-            onChange={(e) => setReason(e.target.value)}
-          />
-          <div className="ms-3 mt-3">
-            <AppButton type="submit" color="primary">
-              {"Reject"}
-            </AppButton>
-          </div>
-        </form>
-      </ReusableModal>
+          {status}
+        </AppButton>
+      ) : (
+        <ReusableModal
+          title="Reason for rejecting."
+          buttonLabel={status}
+          isModalOpen={status === "REJECTED" && isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          color={getStatusColor(status)}
+          variant="contained"
+          handleMenu={
+            status === "FULFILLED" || status === "REJECTED"
+              ? undefined
+              : handleClick
+          }
+        >
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              // alert(reason);
+              // API HERE
+            }}
+          >
+            <InputField
+              label="Reason"
+              value={reason}
+              type="text"
+              onChange={(e) => setReason(e.target.value)}
+            />
+            <div className="ms-3 mt-3">
+              <AppButton type="submit" color="primary">
+                {"Reject"}
+              </AppButton>
+            </div>
+          </form>
+        </ReusableModal>
+      )}
+
       <Menu
         id="status-menu"
         anchorEl={anchorEl}

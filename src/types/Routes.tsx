@@ -33,12 +33,12 @@ export type DashboardRoutes = {
 export const dashboardRoutes: DashboardRoutes = {
   ADMIN: [
     { to: "/admin/users", value: "users", label: "Users", icon: <MdPeople /> },
-    {
-      to: "/admin/new_user",
-      value: "new_user",
-      label: "New user",
-      icon: <FaUserPlus />,
-    },
+    // {
+    //   to: "/admin/new_user",
+    //   value: "new_user",
+    //   label: "New user",
+    //   icon: <FaUserPlus />,
+    // },
     {
       to: "/admin/logs",
       value: "logs",

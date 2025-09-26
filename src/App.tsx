@@ -13,7 +13,7 @@ import ProtectedRoutes from "./utils/ProtectedRoutes";
 import NotFoundPage from "./components/other/NotFoundPage";
 // import Loading from "./components/other/Loading";
 import Admin from "./pages/Admin/Admin";
-import UserRegistration from "./pages/Auth/UserRegistration";
+// import UserRegistration from "./pages/Auth/UserRegistration";
 import LoginForm from "./pages/Auth/LoginForm";
 import { getRedirectPath } from "./utils/Helper";
 
@@ -57,10 +57,10 @@ function App() {
                 }
               >
                 <Route path="users" element={<Admin role={role} />} />
-                <Route
+                {/* <Route
                   path="new_user"
                   element={<UserRegistration role={role} />}
-                />
+                /> */}
                 <Route path="logs" element={<Logs role={role} />} />
               </Route>
 

@@ -26,10 +26,10 @@ export default function AccountMenu() {
     setAnchorEl(null);
   };
   const handleLogout = async () => {
-    if (confirm("ARE YOU SURE YOU WANT TO LOGOUT?")) {
-      await signOut();
-      return;
-    }
+    // if (confirm("ARE YOU SURE YOU WANT TO LOGOUT?")) {
+    await signOut();
+    return;
+    // }
   };
   return (
     <React.Fragment>

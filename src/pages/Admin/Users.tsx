@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Column, ReusableTable } from "../../components/other/StocksTable";
+import { Column, ReusableTable } from "../../components/other/ReusableTable";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import BasicSelect from "../../components/other/BasicSelector";
@@ -9,12 +9,14 @@ import { roleOptions } from "../../types/User";
 import ReusableModal from "../../components/other/Modal";
 import { MdDelete } from "react-icons/md";
 import NewUserForm from "../Auth/NewUserForm";
+import ConfirmModal from "../../components/other/ConfirmModal";
 
 export default function UsersTablePage() {
   const { users, getAllUsers, deleteUser } = useUserContext();
 
   const [allUsers, setUsers] = useState<FetchedUser[]>([]);
   const [filterRole, setFilterRole] = useState<string>("All");
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     getAllUsers();
@@ -39,17 +41,27 @@ export default function UsersTablePage() {
   const userColumns: Column<FetchedUser>[] = [
     { key: "id", label: "ID" },
     { key: "blockchain_address", label: "blockchain address" },
-
     {
       key: "first_name",
-      label: "Name",
+      label: "Firstname",
+      render: (_, row) => `${row.first_name}`,
+    },
+    {
+      key: "last_name",
+      label: "Lastname",
+      render: (_, row) => `${row.last_name}`,
+    },
+
+    {
+      key: "username",
+      label: "Username",
       render: (_, row) => `${row.username}`,
     },
     { key: "email", label: "Email" },
     { key: "role", label: "Role" },
     { key: "department", label: "Department" },
     {
-      key: "actions",
+      key: "action",
       label: "Actions",
       align: "center",
       render: (_, row) => (
@@ -61,10 +73,25 @@ export default function UsersTablePage() {
             variant="outlined"
             color="error"
             size="small"
-            onClick={() => handleDelete(row.id)}
+            onClick={() => {
+              setOpen(true);
+            }}
           >
             <MdDelete />
           </Button>
+          <ConfirmModal
+            open={open}
+            onClose={() => setOpen(false)}
+            onConfirm={() => {
+              handleDelete(row.id ?? "");
+              setOpen(false);
+            }}
+            title="Delete User"
+            description="This action is irreversible. Do you really want to delete this user?"
+            color="warning"
+            confirmLabel="Yes, Delete"
+            cancelLabel="Cancel"
+          />
         </Box>
       ),
     },
@@ -83,7 +110,7 @@ export default function UsersTablePage() {
       </Box>
 
       {/* Table */}
-      <ReusableTable<FetchedUser>
+      <ReusableTable<{ id: "" }>
         columns={userColumns}
         data={filteredUsers}
         getRowStyle={(_, index) => ({

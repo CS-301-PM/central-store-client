@@ -17,6 +17,8 @@ export interface FetchedUser {
   username?: string;
   department?: Department | "";
   blockchain_address?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export type AuthUserState = {
@@ -36,11 +38,19 @@ export type UserSignIn = {
   password?: string;
 };
 
-export type UserSignUp = {} & UserSignIn & {
-    firstName: string;
-    lastName: string;
-    role: Role;
-  };
+export type UserSignUp = {
+  // id?: string;
+  role: Role;
+  last_name?: string;
+  first_name?: string;
+  email?: string;
+  username?: string;
+  department?: Department | "";
+  // blockchain_address?: string;
+  // created_at?: string;
+  // updated_at?: string;
+  password?: string;
+};
 
 type ErrorBody = {
   message: string;

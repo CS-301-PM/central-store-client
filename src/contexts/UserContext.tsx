@@ -6,11 +6,11 @@ import {
   AuthUserState,
   FetchedUser,
 } from "../types/auth";
-// import axios from "axios";
 
 import { userReducer } from "../reducers/UserReducer";
 import { UserContext } from "../hooks/UserContextHook";
 import { UserRegistration } from "../types/User";
+import { DepartmentType } from "../types/Departments";
 
 const initialAuthUserState: AuthUserState = {
   user: null,
@@ -22,7 +22,6 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(userReducer, initialAuthUserState);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<ErrorResponse | null>(null);
-  const preUrl = "/api/auth";
 
   useEffect(() => {
     const checkUserAccessStatus = async () => {
@@ -90,7 +89,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
     setError(null);
-    const user = await response.json();
+    const user: FetchedUser = await response.json();
     dispatch({ type: "SIGNUP", payload: user });
     setIsLoading(false);
   };
@@ -120,9 +119,6 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
       user.role = "ADMIN";
     }
     user.role = user.role.toUpperCase();
-
-    // localStorage.setItem("accessToken", accessToken);
-    // localStorage.setItem("user", res.JSON.stringify());
     localStorage.setItem("user", JSON.stringify(res));
 
     dispatch({ type: "SIGNIN", payload: user });
@@ -161,10 +157,9 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
         throw new Error(`Failed to update user: ${response.status}`);
       }
 
-      const data = await response.json();
-
-      dispatch({ type: "UPDATE_USER", payload: data });
-      return data;
+      const res = await response.json();
+      dispatch({ type: "UPDATE_USER", payload: res.user });
+      return res.user;
     } catch (error) {
       console.error("Error updating user:", error);
       throw error;
@@ -201,18 +196,17 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
     return users;
   };
 
-  const listDepartments = async (): Promise<string[]> => {
+  const listDepartments = async (): Promise<DepartmentType[]> => {
     setIsLoading(true);
-    const URL = `${import.meta.env.VITE_SERVER}/api/department/all`;
+    const URL = `${import.meta.env.VITE_SERVER}api/departments/all`;
     const session = JSON.parse(localStorage.getItem("user") || "{}");
-    const accessToken = session.access;
-    // const user = session.user;
+    const accessToken = session.token;
     const response = await fetch(URL, {
       method: "GET",
-      // credentials: "include",
+      credentials: "include",
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        // "Content-Type": "application/json",
+        "Content-Type": "application/json",
       },
     });
 
@@ -222,7 +216,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
       return [];
     }
     setError(null);
-    const departments: string[] = await response.json();
+    const departments: DepartmentType = await response.json();
     dispatch({ type: "LIST_DEPARTMENTS", payload: departments });
     setIsLoading(false);
     return departments;
@@ -248,9 +242,9 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
         throw new Error(`Request failed with status ${response.status}`);
       }
 
-      const data = await response.json();
-      dispatch({ type: "ADD_USER", payload: data });
-      return data;
+      const res = await response.json();
+      dispatch({ type: "ADD_USER", payload: res.user });
+      // return data;
     } catch (error) {
       console.error("Error adding user:", error);
       throw error;
@@ -289,8 +283,8 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
       throw error;
     }
   };
-  const newDepartment = async (department: string) => {
-    const URL = `${import.meta.env.VITE_SERVER}/api/department/new`;
+  const newDepartment = async (department: DepartmentType) => {
+    // const URL = `${import.meta.env.VITE_SERVER}/api/department/add`;
     dispatch({ type: "NEW_DEPARTMENT", payload: department });
   };
   return (
@@ -310,7 +304,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
         isLoading,
         error,
         users: state.users,
-        // departments: state.departments,
+        departments: state?.departments,
       }}
     >
       {children}

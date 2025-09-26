@@ -1,23 +1,27 @@
-import { Link } from "react-router-dom";
 import RequestTableHeader from "../../components/other/RequestTableHeader";
 import UsersTablePage from "./Users";
-import { Role } from "../../types/User";
 import ReusableModal from "../../components/other/Modal";
 import NewUserForm from "../Auth/NewUserForm";
 
-function Admin({ role }: { role: Role }) {
+function Admin() {
   return (
-    <div className="p-2">
+    <div className="">
       <RequestTableHeader
-        title="Manage all users"
-        subtitle="View and manage users."
+        title="User Management"
+        subtitle="View, create, and manage all registered users."
       >
-        <ReusableModal buttonLabel="New User" title="ADD A NEW USER">
+        <ReusableModal
+          color="primary"
+          variant={"contained"}
+          buttonLabel="New User"
+          title="Add a New User"
+        >
           <NewUserForm isNew={true} />
         </ReusableModal>
       </RequestTableHeader>
-      <div className="mt-4">
-        <UsersTablePage role="role" />
+
+      <div className="mt-5">
+        <UsersTablePage />
       </div>
     </div>
   );

@@ -8,9 +8,10 @@ import { useUserContext } from "../../hooks/UserContextHook";
 import Loading from "../../components/other/Loading";
 import { priorityLevels, PriorityType } from "../../types/Request";
 import { useRequestManagementContext } from "../../hooks/useRequestHook";
+import { useStockManagementContext } from "../../hooks/useStockManagementContext";
 // import { useStockManagementContext } from "../../hooks/useStockManagementContext";
 
-function NewRequest() {
+function NewRequest({ stocks }) {
   const [item, setItem] = React.useState("");
   const [quantity, setQuantity] = React.useState("");
   const [reason, setReason] = React.useState("");
@@ -24,6 +25,13 @@ function NewRequest() {
   // const { listAllStocks,} = useStockManagementContext();
 
   const { requests, loading, error } = state;
+
+  // const { state, listAllStocks } = useStockManagementContext();
+  // const { items } = state;
+
+  // React.useEffect(() => {
+  //   listAllStocks([]);
+  // }, []);
 
   React.useEffect(() => {
     setRequesterId(user?.user?.username ?? "");

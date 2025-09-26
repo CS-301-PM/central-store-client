@@ -5,12 +5,7 @@ import {
   StockState,
   //   initialState,
 } from "../reducers/StockManagementReducer";
-import {
-  sampleStocks,
-  StockAddingType,
-  StockFetchedType,
-} from "../types/Stocks";
-// import { simpleStocks } from "../utils/Constants";
+import { StockAddingType, StockFetchedType } from "../types/Stocks";
 import { v4 as uuidv4 } from "uuid";
 import moment from "moment";
 
@@ -61,14 +56,10 @@ export const StockManagementProvider = ({
 
       const stocksData = await response.json();
 
-      // console.log("STOCKS", stocksData.stocks);
-
       dispatch({
         type: "LIST_ALL_STOCK",
-        payload: stocksData.stocks, //stocksData.data, // the fetched stock list
+        payload: stocksData.stocks,
       });
-
-      // return stocksData;
     } catch (error) {
       console.error("Error fetching stocks:", error);
       throw error;
@@ -98,27 +89,25 @@ export const StockManagementProvider = ({
         throw new Error(`Failed to add stock: ${response.status}`);
       }
 
-      // ✅ Parse response body
-      const addedStock = await response.json();
-      console.log(addedStock);
-      // ✅ Dispatch with the new stock
-      dispatch({ type: "ADD_NEW_STOCK", payload: addedStock });
+      const res = await response.json();
+      dispatch({ type: "ADD_NEW_STOCK", payload: res.stock });
 
-      return addedStock; // optional: return it to the caller
+      return res;
     } catch (error) {
       console.error("Error adding stock:", error);
       throw error;
     }
   };
 
-  const updateStock = async (stock: Stock) => {
+  const updateStock = async (stock) => {
+    // console.log(stock);
     const session = JSON.parse(localStorage.getItem("user") || "{}");
     const accessToken = session.access;
-    const URL = `${import.meta.env.VITE_SERVER}/api/stocks/${stock.stockId}/`;
+    const URL = `${import.meta.env.VITE_SERVER}api/stocks/edit/${stock.id}`;
 
     try {
       const response = await fetch(URL, {
-        method: "PUT", // or PATCH if your API supports partial update
+        method: "PUT",
         headers: {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
@@ -131,10 +120,9 @@ export const StockManagementProvider = ({
         throw new Error(`Failed to update stock: ${response.status}`);
       }
 
-      const updatedStock = await response.json();
-      console.log(updatedStock);
-      dispatch({ type: "UPDATE_STOCK", payload: updatedStock });
-      // return updatedStock;
+      const res = await response.json();
+      console.log(res.stock);
+      dispatch({ type: "UPDATE_STOCK", payload: res.stock });
     } catch (error) {
       console.error("Error updating stock:", error);
       throw error;

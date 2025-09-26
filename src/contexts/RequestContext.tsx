@@ -80,7 +80,7 @@ export const RequestManagementProvider = ({
 
       const res = await response.json();
       // const requests: FetchedRequestObj[] = res.data;
-      dispatch({ type: "LIST_ALL_REQUESTS", payload: res.requests });
+      dispatch({ type: "LIST_ALL_REQUESTS", payload: res.data });
       return res.data;
     } catch (error) {
       console.error("Error fetching requests:", error);

@@ -61,7 +61,7 @@ export default function EnhancedTable({ role }: { role: Role }) {
   );
 
   const sortedRows = [...filteredRows].sort((a, b) =>
-    sortAsc ? a.quantity - b.quantity : b.quantity - a.quantity
+    sortAsc ? a.quantity ?? 0 - b.quantity : b.quantity ?? 0 - a.quantity
   );
 
   // const sortedRows = [];
@@ -153,11 +153,15 @@ export default function EnhancedTable({ role }: { role: Role }) {
                 <TableCell align="left">{request.createdAt}</TableCell>
 
                 <TableCell align="left">
+                  {/* {
+                    role === "DEPARTMENT_DEAN" ? <AppButton color="primary"/>
+                  } */}
                   <StatusMenu
                     status={request.status}
-                    onChange={(newStatus) =>
-                      handleStatusChange(request.id, newStatus)
-                    }
+                    onChange={(newStatus) => {
+                      request.status = newStatus;
+                      handleStatusChange(request.id, newStatus);
+                    }}
                   />
                 </TableCell>
               </TableRow>

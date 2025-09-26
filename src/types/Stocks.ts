@@ -136,3 +136,4 @@ export const sampleStocks: StockFetchedType[] = [
     updated_at: "2025-09-19T09:40:00Z",
   },
 ];
+

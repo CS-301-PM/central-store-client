@@ -3,41 +3,52 @@ import React, { useEffect } from "react";
 import AppButton from "../../components/other/AppButton";
 import InputField from "../../components/other/InputFild";
 import BasicSelect from "../../components/other/BasicSelector";
-import {
-  departmentOptions,
-  Role,
-  roleOptionsForUserRegistration,
-} from "../../types/User";
+import { Role, roleOptionsForUserRegistration } from "../../types/User";
 import { FetchedUser } from "../../types/auth";
+import "./NewUserForm.css";
+import { DepartmentType } from "../../types/Departments";
 
 interface NewUserProps {
   userToUpdate?: FetchedUser;
   isNew?: boolean;
 }
 
-function NewUserForm({ isNew = true, userToUpdate }: NewUserProps) {
-  const { addUser, updateUser, isLoading } = useUserContext();
+function swapIdAndName(arr: DepartmentType[]) {
+  return arr.map((item: DepartmentType) => ({
+    value: item.name,
+    label: item.name,
+  }));
+}
 
-  const [firstName, setFirstName] = React.useState("");
-  const [lastName, setLastName] = React.useState("");
-  const [username, setusername] = React.useState("");
-  const [email, setEmail] = React.useState("");
+function NewUserForm({ isNew = true, userToUpdate }: NewUserProps) {
+  const { addUser, updateUser, isLoading, departments, listDepartments } =
+    useUserContext();
+
+  const [firstName, setFirstName] = React.useState("Test");
+  const [lastName, setLastName] = React.useState("Subject");
+  const [username, setusername] = React.useState("subject");
+  const [email, setEmail] = React.useState("subject@example.com");
 
   const [userRole, setUserRole] = React.useState(
     roleOptionsForUserRegistration[1].value
   );
 
-  const [department, setDepartment] = React.useState(
-    departmentOptions[0].value
-  );
-  const [password, setPassword] = React.useState("");
-  const [confirmPassword, setConfirmPassword] = React.useState("");
+  const [department, setDepartment] = React.useState<string>("");
+  const [password, setPassword] = React.useState("11111111");
+  const [confirmPassword, setConfirmPassword] = React.useState("11111111");
   const [errors, setErrors] = React.useState<Record<string, string | null>>({});
+
+  // useEffect(() => {
+
+  // }, []);
+
+  // useEffect(() => {
+  //   console.log("Departments state updated:", state);
+  // }, [state]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: Record<string, string> = {};
-
     if (!firstName) newErrors.firstName = "First name is required";
     if (!lastName) newErrors.lastName = "Last name is required";
     if (!username) newErrors.username = "Employee ID is required";
@@ -61,10 +72,8 @@ function NewUserForm({ isNew = true, userToUpdate }: NewUserProps) {
           password,
           email,
           department,
-          is_staff: true,
         });
       } else {
-        // alert(111);
         await updateUser({
           first_name: firstName,
           last_name: lastName,
@@ -72,10 +81,10 @@ function NewUserForm({ isNew = true, userToUpdate }: NewUserProps) {
           role: userRole as Role,
           email: email,
           id: userToUpdate?.id,
-          is_staff: userToUpdate?.is_staff,
+          // is_staff: userToUpdate?.is_staff,
           department: department,
           blockchain_address: userToUpdate?.blockchain_address,
-          phone_number: userToUpdate?.phone_number,
+          // phone_number: userToUpdate?.phone_number,
           ...(password ? { password } : {}),
         });
       }
@@ -83,36 +92,45 @@ function NewUserForm({ isNew = true, userToUpdate }: NewUserProps) {
   };
 
   useEffect(() => {
-    if (!isNew && userToUpdate) {
-      setFirstName(userToUpdate.first_name);
-      setLastName(userToUpdate.last_name);
-      setusername(userToUpdate.username);
-      setUserRole(userToUpdate.role);
-      setDepartment(userToUpdate.department || departmentOptions[0].value);
-      setEmail(userToUpdate.email || "");
-    }
+    const fetchDepartments = async () => {
+      try {
+        const deps = swapIdAndName(await listDepartments());
+        setDepartment(deps[0].value);
+        if (!isNew && userToUpdate) {
+          setFirstName(userToUpdate.first_name);
+          setLastName(userToUpdate.last_name);
+          setusername(userToUpdate.username);
+          setUserRole(userToUpdate.role);
+          setDepartment(deps[0].value);
+          setEmail(userToUpdate.email || "");
+        }
+      } catch (error) {
+        console.error("Error fetching departments:", error);
+      }
+    };
+
+    fetchDepartments();
   }, [isNew, userToUpdate]);
 
   return (
-    <div>
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col gap-4 p-4 max-w-md"
-      >
+    <div className="container">
+      <form onSubmit={handleSubmit} className="newUserForm">
+        <div className="paralellInputs">
+          <InputField
+            label="First Name"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            error={errors.firstName || null}
+          />
+          <InputField
+            label="Last Name"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            error={errors.lastName || null}
+          />
+        </div>
         <InputField
-          label="First Name"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          error={errors.firstName || null}
-        />
-        <InputField
-          label="Last Name"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          error={errors.lastName || null}
-        />
-        <InputField
-          label="Employee ID"
+          label="Username"
           value={username}
           onChange={(e) => setusername(e.target.value)}
           error={errors.username || null}
@@ -135,13 +153,13 @@ function NewUserForm({ isNew = true, userToUpdate }: NewUserProps) {
           <BasicSelect
             label="Department"
             value={department}
-            options={departmentOptions}
+            options={swapIdAndName(departments || [])}
             onChange={(val) => setDepartment(String(val))}
           />
         )}
 
         {isNew === true && (
-          <>
+          <div className="paralellInputs">
             <InputField
               label="Password"
               value={password}
@@ -157,7 +175,7 @@ function NewUserForm({ isNew = true, userToUpdate }: NewUserProps) {
               showToggle
               error={errors.confirmPassword || null}
             />
-          </>
+          </div>
         )}
 
         <div className="m-2">

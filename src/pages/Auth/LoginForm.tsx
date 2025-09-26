@@ -5,8 +5,8 @@ import "./loginForm.css";
 import { useUserContext } from "../../hooks/UserContextHook";
 
 function LoginForm() {
-  const [employeeId, setEmployeeId] = React.useState("admin");
-  const [password, setPassword] = React.useState("11111111");
+  const [employeeId, setEmployeeId] = React.useState("");
+  const [password, setPassword] = React.useState("");
   const [errors, setErrors] = React.useState<{
     employeeId?: string;
     password?: string;
