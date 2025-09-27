@@ -6,19 +6,12 @@ import ReusableModal from "./Modal";
 import InputField from "./InputFild";
 import AppButton from "./AppButton";
 import { useUserContext } from "../../hooks/UserContextHook";
+// import { Role } from "../../types/User";
 
 type StatusMenuProps = {
   status: StatusType;
   onChange: (newStatus: StatusType) => void;
 };
-
-const statusOptions: StatusType[] = [
-  "APPROVED",
-  "REJECTED",
-  "IN PROGRESS",
-  "FULFILLED",
-  // "PENDING",
-];
 
 const getStatusColor = (
   status: StatusType
@@ -57,7 +50,7 @@ export default function StatusMenu({ status, onChange }: StatusMenuProps) {
     onChange(newStatus);
     setNewState(newStatus);
     if (newStatus === "REJECTED") {
-      // setIsModalOpen(true);
+      setIsModalOpen(true);
     } else {
       handleClose();
     }
@@ -66,6 +59,24 @@ export default function StatusMenu({ status, onChange }: StatusMenuProps) {
   const [reason, setReason] = React.useState("");
   const { user } = useUserContext();
   const role = user?.user?.role;
+
+  const statusOptionsForManager: StatusType[] = ["APPROVED", "REJECTED"];
+  const statusOptionsForStorekeeper: StatusType[] = [
+    "IN PROGRESS",
+    "FULFILLED",
+  ];
+
+  let statusOptions: string[] = [];
+
+  if (role === "STORES_MANAGER") {
+    statusOptions = [...statusOptionsForManager];
+  } else if (role === "PROCUREMENT_OFFICER") {
+    statusOptions = [...statusOptionsForStorekeeper];
+  }
+
+  statusOptions = statusOptions.filter(
+    (opt) => opt.replace("_", " ") !== status.replace("_", " ")
+  );
 
   return (
     <div>
@@ -86,9 +97,12 @@ export default function StatusMenu({ status, onChange }: StatusMenuProps) {
           color={getStatusColor(status)}
           variant="contained"
           handleMenu={
-            status === "FULFILLED" || status === "REJECTED"
-              ? undefined
-              : handleClick
+            (role === "PROCUREMENT_OFFICER" && status === "APPROVED") ||
+            status === "IN_PROGRESS" ||
+            status === "IN PROGRESS" ||
+            (role === "STORES_MANAGER" && status === "PENDING")
+              ? handleClick
+              : undefined
           }
         >
           <form

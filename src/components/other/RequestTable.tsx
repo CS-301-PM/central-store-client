@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -6,9 +6,11 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import AppButton from "./AppButton";
 import Box from "@mui/material/Box";
-// import { useUserContext } from "../../hooks/UserContextHook";
+import BasicSelect from "./BasicSelector";
+import StatusMenu from "./Menu";
+import NoDataComp from "./NoDataComp";
+import { useRequestManagementContext } from "../../hooks/useRequestHook";
 import {
   FetchedRequestObj,
   priorityOptions,
@@ -16,43 +18,61 @@ import {
   statusOptions,
   StatusType,
 } from "../../types/Request";
-import BasicSelect from "./BasicSelector";
-import { useRequestManagementContext } from "../../hooks/useRequestHook";
-import Loading from "./Loading";
 import { Role } from "../../types/User";
-// import BasicMenu from "./Menu";
-import StatusMenu from "./Menu";
+import moment from "moment";
+import { useUserContext } from "../../hooks/UserContextHook";
+import { groupRequestsByDepartment } from "../../utils/Helper";
 
-export default function EnhancedTable({ role }: { role: Role }) {
+interface EnhancedTableProps {
+  role: Role;
+}
+
+export default function EnhancedTable({ role }: EnhancedTableProps) {
   const { getAllRequests, state, updateRequestStatus } =
     useRequestManagementContext();
   const { requests, loading } = state;
-  // console.log(requests);
-
-  const [rows, setRows] = React.useState<FetchedRequestObj[]>([]);
-  const [filterStatus, setFilterStatus] = React.useState<StatusType | "All">(
+  const { user } = useUserContext();
+  const department = user?.user?.department;
+  const [rows, setRows] = useState<FetchedRequestObj[]>([]);
+  const [filterStatus, setFilterStatus] = useState<StatusType | "All">("All");
+  const [filterPriority, setFilterPriority] = useState<PriorityType | "All">(
     "All"
   );
-  const [filterPriority, setFilterPriority] = React.useState<
-    PriorityType | "All"
-  >("All");
-  const [sortAsc, setSortAsc] = React.useState<boolean>(true);
 
   useEffect(() => {
     getAllRequests();
   }, []);
 
-  useEffect(() => {
-    setRows(requests);
-  }, [requests]);
+  // Assuming `requests` is your full list from the API
+  // const departmentRequests = React.useMemo(() => {
+  //   if (role !== "DEPARTMENT_DEAN") return [];
 
-  if (loading) {
-    return (
-      <div className="loadingParentDiv">
-        <Loading />
-      </div>
-    );
-  }
+  //   // Filter only the requests for the user's department
+  //   const deptRequests = requests.filter(
+  //     (req) => req.department === user?.user?.department
+  //   );
+
+  //   // Group by user_id
+  //   const groupedByUser = deptRequests.reduce((acc, req) => {
+  //     const userId = req.user_id;
+  //     if (!acc[userId]) acc[userId] = [];
+  //     acc[userId].push(req);
+  //     return acc;
+  //   }, {} as Record<number, typeof requests>);
+
+  //   return groupedByUser;
+  // }, [requests, role, user]);
+
+  useEffect(() => {
+    const grouped = groupRequestsByDepartment(requests);
+    if (role === "DEPARTMENT_DEAN") {
+      setRows(grouped.byDepartment[department]);
+    } else if (role === "STORES_MANAGER") {
+      setRows(requests);
+    } else {
+      setRows(requests);
+    }
+  }, [requests, role, department]);
 
   const filteredRows = rows.filter(
     (row) =>
@@ -60,115 +80,108 @@ export default function EnhancedTable({ role }: { role: Role }) {
       (filterPriority === "All" ? true : row.priority === filterPriority)
   );
 
-  const sortedRows = [...filteredRows].sort((a, b) =>
-    sortAsc ? a.quantity ?? 0 - b.quantity : b.quantity ?? 0 - a.quantity
-  );
-
-  // const sortedRows = [];
   const handleStatusChange = async (
     requestId: string,
     newStatus: StatusType
   ) => {
     if (role === "STORES_MANAGER" || role === "PROCUREMENT_OFFICER") {
-      if (newStatus == "IN PROGRESS") {
-        newStatus = "IN_PROGRESS";
-      }
-      await updateRequestStatus(requestId, newStatus);
-    } else {
-      // alert("STORE'S MANAGER CAN APPROVE");
+      const statusToUpdate =
+        newStatus === "IN PROGRESS" ? "IN_PROGRESS" : newStatus;
+      await updateRequestStatus(requestId, statusToUpdate);
     }
   };
 
+  if (loading) {
+    return <div className="loadingParentDiv">Loading...</div>;
+  }
+
   return (
-    <Box>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "flex-start",
-          mb: 2,
-          // flexWrap: "wrap",
-          gap: 2,
-        }}
-      >
-        <BasicSelect
-          label="Filter by Status"
-          value={filterStatus}
-          options={[{ value: "All", label: "All Statuses" }, ...statusOptions]}
-          onChange={(value) => setFilterStatus(value as StatusType | "All")}
-        />
+    <>
+      {requests.length > 0 ? (
+        <Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-start",
+              mb: 2,
+              gap: 2,
+            }}
+          >
+            <BasicSelect
+              label="Filter by Status"
+              value={filterStatus}
+              options={[
+                { value: "All", label: "All Statuses" },
+                ...statusOptions,
+              ]}
+              onChange={(value) => setFilterStatus(value as StatusType | "All")}
+            />
+            <BasicSelect
+              label="Filter by Priority"
+              value={filterPriority}
+              options={[
+                { value: "All", label: "All Priorities" },
+                ...priorityOptions,
+              ]}
+              onChange={(value) =>
+                setFilterPriority(value as PriorityType | "All")
+              }
+            />
+          </Box>
 
-        <BasicSelect
-          label="Filter by Priority"
-          value={filterPriority}
-          options={[
-            { value: "All", label: "All Priorities" },
-            ...priorityOptions,
-          ]}
-          onChange={(value) => setFilterPriority(value as PriorityType | "All")}
-        />
+          <TableContainer component={Paper} sx={{ maxHeight: 500 }}>
+            <Table stickyHeader aria-label="enhanced table">
+              <TableHead>
+                <TableRow sx={{ backgroundColor: "#f5f5f5" }}>
+                  <TableCell>ID</TableCell>
+                  <TableCell align="left">Item</TableCell>
+                  <TableCell align="left">Quantity</TableCell>
+                  <TableCell align="right">Department</TableCell>
+                  <TableCell align="left">Priority</TableCell>
+                  {/* <TableCell align="left">Reason</TableCell> */}
+                  <TableCell align="left">Time</TableCell>
+                  <TableCell align="left">Status</TableCell>
+                </TableRow>
+              </TableHead>
 
-        <AppButton
-          variant="outlined"
-          color="info"
-          onClick={() => setSortAsc((prev) => !prev)}
-        >
-          Sort by Request ID {sortAsc ? "↑" : "↓"}
-        </AppButton>
-      </Box>
-
-      {/* Table */}
-      <TableContainer component={Paper} sx={{ maxHeight: 500 }}>
-        <Table stickyHeader aria-label="enhanced table">
-          <TableHead>
-            <TableRow sx={{ backgroundColor: "#f5f5f5" }}>
-              <TableCell>ID</TableCell>
-              <TableCell align="left">Item</TableCell>
-              <TableCell align="left">Quantity</TableCell>
-              <TableCell align="right">Department</TableCell>
-              <TableCell align="left">Priority</TableCell>
-              <TableCell align="left">Reason</TableCell>
-              <TableCell align="left">Time</TableCell>
-              <TableCell align="left">Status</TableCell>
-
-              {/* <TableCell align="center">Status</TableCell> */}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {sortedRows.map((request, index) => (
-              <TableRow
-                key={request.id}
-                sx={{
-                  backgroundColor: index % 2 === 0 ? "#fff" : "#fafafa",
-                  "&:hover": { backgroundColor: "#e3f2fd" },
-                }}
-              >
-                <TableCell component="th" scope="row">
-                  {request.id}
-                </TableCell>
-                <TableCell align="left">{request.item}</TableCell>
-                <TableCell align="left">{request.quantity}</TableCell>
-                <TableCell align="right">{request.department}</TableCell>
-                <TableCell align="left">{request.priority}</TableCell>
-                <TableCell align="left">{request.reason}</TableCell>
-                <TableCell align="left">{request.createdAt}</TableCell>
-
-                <TableCell align="left">
-                  {/* {
-                    role === "DEPARTMENT_DEAN" ? <AppButton color="primary"/>
-                  } */}
-                  <StatusMenu
-                    status={request.status}
-                    onChange={(newStatus) => {
-                      request.status = newStatus;
-                      handleStatusChange(request.id, newStatus);
+              <TableBody>
+                {filteredRows.map((request, index) => (
+                  <TableRow
+                    key={request.id}
+                    sx={{
+                      backgroundColor: index % 2 === 0 ? "#fff" : "#fafafa",
+                      "&:hover": { backgroundColor: "#e3f2fd" },
                     }}
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
+                  >
+                    <TableCell component="th" scope="row">
+                      {request.id}
+                    </TableCell>
+                    <TableCell align="left">{request.item_name}</TableCell>
+                    <TableCell align="left">{request.quantity}</TableCell>
+                    <TableCell align="right">{request.department}</TableCell>
+                    <TableCell align="left">{request.priority}</TableCell>
+                    {/* <TableCell align="left">{request.reason}</TableCell> */}
+                    <TableCell align="left">
+                      {moment(request.created_at).fromNow()}
+                    </TableCell>
+                    <TableCell align="left">
+                      <StatusMenu
+                        status={request.status}
+                        onChange={(newStatus) => {
+                          request.status = newStatus;
+                          handleStatusChange(request.id, newStatus);
+                        }}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
+      ) : (
+        <NoDataComp />
+      )}
+    </>
   );
 }

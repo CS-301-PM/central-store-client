@@ -24,30 +24,24 @@ function NewUserForm({ isNew = true, userToUpdate }: NewUserProps) {
   const { addUser, updateUser, isLoading, departments, listDepartments } =
     useUserContext();
 
-  const [firstName, setFirstName] = React.useState("Test");
-  const [lastName, setLastName] = React.useState("Subject");
-  const [username, setusername] = React.useState("subject");
-  const [email, setEmail] = React.useState("subject@example.com");
+  const [firstName, setFirstName] = React.useState("");
+  const [lastName, setLastName] = React.useState("");
+  const [username, setusername] = React.useState("");
+  const [email, setEmail] = React.useState("");
 
   const [userRole, setUserRole] = React.useState(
     roleOptionsForUserRegistration[1].value
   );
 
   const [department, setDepartment] = React.useState<string>("");
-  const [password, setPassword] = React.useState("11111111");
-  const [confirmPassword, setConfirmPassword] = React.useState("11111111");
+  const [password, setPassword] = React.useState("");
+  const [confirmPassword, setConfirmPassword] = React.useState("");
   const [errors, setErrors] = React.useState<Record<string, string | null>>({});
-
-  // useEffect(() => {
-
-  // }, []);
-
-  // useEffect(() => {
-  //   console.log("Departments state updated:", state);
-  // }, [state]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setDepartment("");
+
     const newErrors: Record<string, string> = {};
     if (!firstName) newErrors.firstName = "First name is required";
     if (!lastName) newErrors.lastName = "Last name is required";
@@ -81,10 +75,8 @@ function NewUserForm({ isNew = true, userToUpdate }: NewUserProps) {
           role: userRole as Role,
           email: email,
           id: userToUpdate?.id,
-          // is_staff: userToUpdate?.is_staff,
           department: department,
           blockchain_address: userToUpdate?.blockchain_address,
-          // phone_number: userToUpdate?.phone_number,
           ...(password ? { password } : {}),
         });
       }
@@ -149,14 +141,15 @@ function NewUserForm({ isNew = true, userToUpdate }: NewUserProps) {
           onChange={(val) => setUserRole(String(val) as Role)}
         />
 
-        {userRole === "DEPARTMENT_DEAN" && (
-          <BasicSelect
-            label="Department"
-            value={department}
-            options={swapIdAndName(departments || [])}
-            onChange={(val) => setDepartment(String(val))}
-          />
-        )}
+        {userRole === "DEPARTMENT_DEAN" ||
+          (userRole === "DEPARTMENT_HOD" && (
+            <BasicSelect
+              label="Department"
+              value={department}
+              options={swapIdAndName(departments || [])}
+              onChange={(val) => setDepartment(String(val))}
+            />
+          ))}
 
         {isNew === true && (
           <div className="paralellInputs">

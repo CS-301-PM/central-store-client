@@ -2,6 +2,7 @@ export type Role =
   | "STORES_MANAGER"
   | "PROCUREMENT_OFFICER"
   | "DEPARTMENT_DEAN"
+  | "DEPARTMENT_HOD"
   | "CFO"
   | "ADMIN";
 export const roleOptionsForUserRegistration: {
@@ -10,8 +11,9 @@ export const roleOptionsForUserRegistration: {
 }[] = [
   { value: "ADMIN", label: "Admin" },
   { value: "STORES_MANAGER", label: "Stores Manager" },
-  { value: "PROCUREMENT_OFFICER", label: "Procurement Officer" },
-  { value: "DEPARTMENT_DEAN", label: "Department Dean" },
+  { value: "PROCUREMENT_OFFICER", label: "Storekeepr" },
+  { value: "DEPARTMENT_DEAN", label: "Department HoD" },
+  { value: "DEPARTMENT_HOD", label: "Department HoD" },
   { value: "CFO", label: "Chief Financial Officer" },
 ];
 
@@ -74,18 +76,3 @@ export type ErrorResponse = {
     ]: ErrorBody;
   };
 };
-
-export const departmentOptions = [
-  { value: "finance", label: "Finance" },
-  { value: "hr", label: "Human Resources" },
-  { value: "it", label: "Information Technology" },
-  { value: "central_store", label: "Central Store" },
-  { value: "procurement", label: "Procurement" },
-  { value: "library", label: "Library" },
-  { value: "laboratory", label: "Laboratory" },
-  { value: "maintenance", label: "Maintenance" },
-  { value: "security", label: "Security" },
-  { value: "transport", label: "Transport" },
-  { value: "research", label: "Research & Development" },
-  { value: "administration", label: "Administration" },
-];

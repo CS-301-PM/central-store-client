@@ -48,7 +48,7 @@ export const RequestManagementProvider = ({
 
       const respondedRequest: FetchedRequestObj = await response.json();
 
-      dispatch({ type: "MAKE_REQUEST", payload: respondedRequest });
+      dispatch({ type: "MAKE_REQUEST", payload: respondedRequest.data });
       return respondedRequest;
     } catch (error) {
       console.error("Error making request:", error);

@@ -2,41 +2,60 @@ import * as React from "react";
 import InputField from "../../components/other/InputFild";
 import AppButton from "../../components/other/AppButton";
 import BasicSelect from "../../components/other/BasicSelector";
-import RequestTableHeader from "../../components/other/RequestTableHeader";
-import { Link } from "react-router-dom";
-import { useUserContext } from "../../hooks/UserContextHook";
 import Loading from "../../components/other/Loading";
 import { priorityLevels, PriorityType } from "../../types/Request";
+import { useUserContext } from "../../hooks/UserContextHook";
 import { useRequestManagementContext } from "../../hooks/useRequestHook";
-import { useStockManagementContext } from "../../hooks/useStockManagementContext";
-// import { useStockManagementContext } from "../../hooks/useStockManagementContext";
 
-function NewRequest({ stocks }) {
+function NewRequest() {
   const [item, setItem] = React.useState("");
   const [quantity, setQuantity] = React.useState("");
   const [reason, setReason] = React.useState("");
-  const [priority, setPriority] = React.useState<PriorityType>("Low");
+  const [priority, setPriority] = React.useState<PriorityType>("LOW");
   const [requesterId, setRequesterId] = React.useState("");
   const [department, setDepartment] = React.useState("Finance");
   const [stockId, setStockId] = React.useState("1");
 
   const { user, isLoading } = useUserContext();
   const { makeRequest, state } = useRequestManagementContext();
-  // const { listAllStocks,} = useStockManagementContext();
+  const { loading, error } = state;
 
-  const { requests, loading, error } = state;
+  const [possibleItems, setPossibleItems] = React.useState<
+    { value: string; label: string }[]
+  >([]);
 
-  // const { state, listAllStocks } = useStockManagementContext();
-  // const { items } = state;
+  React.useEffect(() => {
+    const fetchStocks = async () => {
+      try {
+        const URL = `${import.meta.env.VITE_SERVER}api/stocks/available`;
 
-  // React.useEffect(() => {
-  //   listAllStocks([]);
-  // }, []);
+        const response = await fetch(URL);
+        const res = await response.json();
+
+        const availableItems = res.stocks
+          .filter((stock) => stock.available)
+          .map((stock) => ({
+            value: stock.item_name,
+            label: stock.item_name,
+          }));
+
+        // Optional: remove duplicates
+        const uniqueItems = Array.from(
+          new Map(availableItems.map((i) => [i.value, i])).values()
+        );
+
+        setPossibleItems(uniqueItems);
+      } catch (error) {
+        console.error("Error fetching stocks:", error);
+      }
+    };
+
+    fetchStocks();
+  }, []);
 
   React.useEffect(() => {
     setRequesterId(user?.user?.username ?? "");
     setDepartment(user?.user?.department ?? "");
-    // listAllStocks();
   }, [user?.user]);
 
   if (isLoading) {
@@ -46,16 +65,6 @@ function NewRequest({ stocks }) {
       </div>
     );
   }
-
-  const possibleItems = [
-    { value: "A4 Books", label: "A4 Books" },
-    { value: "Pens", label: "Pens" },
-    { value: "Notebooks", label: "Notebooks" },
-    { value: "Staplers", label: "Staplers" },
-    { value: "Markers", label: "Markers" },
-  ];
-
-  // console.log(state);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,81 +82,48 @@ function NewRequest({ stocks }) {
       priority: priority,
       reason: reason,
       department: user?.user?.department,
-      //   "blockchain_address": "0x123abc456def"
     });
-    // setItem("");
-    // setQuantity("");
-    // setReason("");
-    // setPriority("LOW");
-    // setRequesterId("");
   };
 
   return (
     <div className="m-2">
-      <RequestTableHeader
-        title="Make a new request"
-        subtitle="Here you can create and make a new request"
-      >
-        <Link to={"/department/requests"}>
-          <AppButton variant="contained" color="primary">
-            All requests
-          </AppButton>
-        </Link>
-      </RequestTableHeader>
+      <form onSubmit={handleSubmit}>
+        <BasicSelect
+          label="Item Name"
+          value={item}
+          options={possibleItems}
+          onChange={(value) => setItem(String(value))}
+        />
 
-      <form className="" onSubmit={handleSubmit}>
-        <div className="">
-          <div className="">
-            <BasicSelect
-              label="Item Name"
-              value={item}
-              options={possibleItems}
-              onChange={(value) => setItem(String(value))}
-            />
-          </div>
-
-          <div className="">
-            <InputField
-              label="Quantity"
-              type="number"
-              value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
-              error={error}
-            />
-          </div>
-
-          <div className="">
-            <BasicSelect
-              label="Priority Level"
-              value={priority}
-              options={priorityLevels}
-              onChange={(value) => setPriority(value as PriorityType)}
-            />
-          </div>
-
-          <div className="">
-            <InputField
-              label="Reasons for Requesting"
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              error={error}
-            />
-          </div>
-
-          <div className="">
-            <InputField
-              label="Requester ID"
-              value={requesterId}
-              disabled={true}
-            />
-          </div>
-
-          <div className="">
-            <InputField label="Departmtnt" value={department} disabled={true} />
-          </div>
+        <div className="paralellInputs">
+          <InputField
+            label="Quantity"
+            type="number"
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+            error={error}
+          />
+          <BasicSelect
+            label="Priority Level"
+            value={priority}
+            options={priorityLevels}
+            onChange={(value) => setPriority(value as PriorityType)}
+          />
         </div>
 
-        <div className="m-2">
+        <InputField
+          label="Reasons for Requesting"
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          error={error}
+        />
+
+        <div className="paralellInputs">
+          <InputField label="User" value={requesterId} disabled />
+          <InputField label="Department" value={department} disabled />
+        </div>
+
+        <div className="m-3">
           <AppButton
             disabled={loading}
             variant="contained"

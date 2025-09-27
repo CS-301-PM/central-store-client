@@ -93,12 +93,12 @@ export const dashboardRoutes: DashboardRoutes = {
       label: "Requests",
       icon: <MdListAlt />,
     },
-    {
-      to: "/department/new_request",
-      value: "new_request",
-      label: "New Request",
-      icon: <FaPlusSquare />,
-    },
+    // {
+    //   to: "/department/new_request",
+    //   value: "new_request",
+    //   label: "New Request",
+    //   icon: <FaPlusSquare />,
+    // },
     {
       to: "/department/logs",
       value: "logs",

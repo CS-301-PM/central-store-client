@@ -20,7 +20,7 @@ import { getRedirectPath } from "./utils/Helper";
 import "./App.css";
 import Logs from "./pages/Common/Logs";
 import Requests from "./pages/Common/Requests";
-import NewRequest from "./pages/Department/NewRequest";
+// import NewRequest from "./pages/Department/NewRequest";
 import StockTablePage from "./pages/Common/Stocks";
 import Dashboard from "./pages/Manager/Dashboard";
 import Funds from "./pages/CFO/Funds";
@@ -77,7 +77,7 @@ function App() {
                 }
               >
                 <Route path="requests" element={<Requests role={role} />} />
-                <Route path="new_request" element={<NewRequest />} />
+                {/* <Route path="new_request" element={<NewRequest />} /> */}
                 <Route path="logs" element={<Logs role={role} />} />
               </Route>
 

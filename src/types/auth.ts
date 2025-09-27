@@ -1,11 +1,3 @@
-export type Department =
-  | "registry"
-  | "finance"
-  | "human-resources"
-  | "procurement"
-  | "library"
-  | "ict";
-
 import { Role } from "./User";
 
 export interface FetchedUser {
@@ -15,7 +7,7 @@ export interface FetchedUser {
   first_name?: string;
   email?: string;
   username?: string;
-  department?: Department | "";
+  department?: "";
   blockchain_address?: string;
   created_at?: string;
   updated_at?: string;
@@ -45,10 +37,7 @@ export type UserSignUp = {
   first_name?: string;
   email?: string;
   username?: string;
-  department?: Department | "";
-  // blockchain_address?: string;
-  // created_at?: string;
-  // updated_at?: string;
+  department?: "";
   password?: string;
 };
 
