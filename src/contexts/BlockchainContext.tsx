@@ -18,24 +18,9 @@ export const BlockchainContextProvider: React.FC<{
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  // Record a new log
-  const recordLogs = useCallback(async (log: BlockchainLogType) => {
-    try {
-      setIsLoading(true);
-      // simulate API / blockchain call
-      await new Promise((resolve) => setTimeout(resolve, 300));
-
-      dispatch({ type: RECORD_LOGS, payload: log });
-      setIsLoading(false);
-    } catch (err: any) {
-      setError(err.message || "Failed to record log");
-      setIsLoading(false);
-    }
-  }, []);
-
   // Fetch logs
   const getLogs = useCallback(async () => {
-    const URL = `${import.meta.env.VITE_SERVER}api/blockchain/all`;
+    const URL = `${import.meta.env.VITE_SERVER}api/blockchain`;
     const session = JSON.parse(localStorage.getItem("user") || "{}");
     const accessToken = session.token;
 
@@ -54,8 +39,7 @@ export const BlockchainContextProvider: React.FC<{
       }
 
       const logs = await response.json();
-      // console.log(logs.blocks);
-      dispatch({ type: GET_LOGS, payload: logs.blocks });
+      dispatch({ type: GET_LOGS, payload: logs.items });
       setIsLoading(false);
     } catch (err: any) {
       setError(err.message || "Failed to fetch logs");
@@ -63,16 +47,11 @@ export const BlockchainContextProvider: React.FC<{
     }
   }, []);
 
-  const latestLog =
-    state.logs.length > 0 ? state.logs[state.logs.length - 1] : null;
-
   return (
     <BlockchainContext.Provider
       value={{
-        recordLogs,
         getLogs,
         logs: state.logs,
-        latestLog,
         isLoading,
         error,
       }}

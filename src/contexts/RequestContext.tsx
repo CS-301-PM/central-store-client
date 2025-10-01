@@ -12,6 +12,7 @@ export type RequestManagementContextType = {
   makeRequest: (req: RequestObj) => void;
   getAllRequests: () => void;
   updateRequestStatus: (requestId: string, statusType: StatusType) => void;
+  dashboardRequest: () => void;
 };
 
 export const RequestManagementContext = createContext<
@@ -28,7 +29,7 @@ export const RequestManagementProvider = ({
   const makeRequest = async (newRequest: RequestObj) => {
     const session = JSON.parse(localStorage.getItem("user") || "{}");
     const accessToken = session.token;
-    const URL = `${import.meta.env.VITE_SERVER}api/requests/make`;
+    const URL = `${import.meta.env.VITE_SERVER}api/requests`;
 
     state.loading = true;
 
@@ -46,10 +47,10 @@ export const RequestManagementProvider = ({
       if (!response.ok)
         throw new Error(`Failed to make request: ${response.status}`);
 
-      const respondedRequest: FetchedRequestObj = await response.json();
+      const res = await response.json();
 
-      dispatch({ type: "MAKE_REQUEST", payload: respondedRequest.data });
-      return respondedRequest;
+      dispatch({ type: "MAKE_REQUEST", payload: res });
+      return res;
     } catch (error) {
       console.error("Error making request:", error);
       throw error;
@@ -61,7 +62,7 @@ export const RequestManagementProvider = ({
   const getAllRequests = async () => {
     const session = JSON.parse(localStorage.getItem("user") || "{}");
     const accessToken = session.token;
-    const URL = `${import.meta.env.VITE_SERVER}api/requests/all`;
+    const URL = `${import.meta.env.VITE_SERVER}api/requests`;
 
     state.loading = true;
 
@@ -79,9 +80,9 @@ export const RequestManagementProvider = ({
       }
 
       const res = await response.json();
-      // const requests: FetchedRequestObj[] = res.data;
-      dispatch({ type: "LIST_ALL_REQUESTS", payload: res.data });
-      return res.data;
+      // console.log("Fetched requests:", res);
+      dispatch({ type: "LIST_ALL_REQUESTS", payload: res });
+      return res;
     } catch (error) {
       console.error("Error fetching requests:", error);
       throw error;
@@ -132,6 +133,43 @@ export const RequestManagementProvider = ({
     }
   };
 
+  const dashboardRequest = async () => {
+    const session = JSON.parse(localStorage.getItem("user") || "{}");
+    const accessToken = session.token;
+    const URL = `${import.meta.env.VITE_SERVER}api/requests/dashboard`;
+
+    state.loading = true;
+
+    try {
+      const response = await fetch(URL, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        // body: JSON.stringify({ status: statusType }),
+      });
+
+      if (!response.ok)
+        throw new Error(`Failed to update status: ${response.status}`);
+
+      const res = await response.json();
+
+      dispatch({
+        type: "REQUESTS_DASHBOARD",
+        payload: res,
+      });
+
+      return res;
+    } catch (error) {
+      console.error("Error updating request status:", error);
+      throw error;
+    } finally {
+      state.loading = false;
+    }
+  };
+
   return (
     <RequestManagementContext.Provider
       value={{
@@ -139,6 +177,7 @@ export const RequestManagementProvider = ({
         makeRequest,
         getAllRequests,
         updateRequestStatus,
+        dashboardRequest,
       }}
     >
       {children}

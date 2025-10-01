@@ -26,12 +26,10 @@ export type AuthUserState = {
 
 export type UserSignIn = {
   username?: string;
-  email?: string;
   password?: string;
 };
 
 export type UserSignUp = {
-  // id?: string;
   role: Role;
   last_name?: string;
   first_name?: string;
@@ -41,18 +39,18 @@ export type UserSignUp = {
   password?: string;
 };
 
-type ErrorBody = {
-  message: string;
-  type: string;
-  value: string;
-};
+// type ErrorBody = {
+//   message: string;
+//   type: string;
+//   value: string;
+// };
 
-export type ErrorResponse = {
-  errors: {
-    [
-      key: string | "employeeId" | "firstName" | "lastName" | "email" | "role"
-    ]: ErrorBody;
-  };
-};
+// export type ErrorResponse = {
+//   errors: {
+//     [
+//       key: string | "employeeId" | "firstName" | "lastName" | "email" | "role"
+//     ]: ErrorBody;
+//   };
+// };
 
 //

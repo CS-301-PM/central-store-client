@@ -7,12 +7,12 @@ import {
   MdEditNotifications,
 } from "react-icons/md";
 import { Route } from "react-router-dom";
-import {
-  FaMoneyCheckAlt,
-  FaPlusSquare,
-  FaUserPlus,
-  FaUsers,
-} from "react-icons/fa";
+// import {
+//   FaMoneyCheckAlt,
+//   FaPlusSquare,
+//   FaUserPlus,
+//   FaUsers,
+// } from "react-icons/fa";
 import { TbLogs } from "react-icons/tb";
 
 import { Role } from "./User";
@@ -33,12 +33,6 @@ export type DashboardRoutes = {
 export const dashboardRoutes: DashboardRoutes = {
   ADMIN: [
     { to: "/admin/users", value: "users", label: "Users", icon: <MdPeople /> },
-    // {
-    //   to: "/admin/new_user",
-    //   value: "new_user",
-    //   label: "New user",
-    //   icon: <FaUserPlus />,
-    // },
     {
       to: "/admin/logs",
       value: "logs",
@@ -54,18 +48,6 @@ export const dashboardRoutes: DashboardRoutes = {
       label: "Dashboard",
       icon: <MdDashboard />,
     },
-    // {
-    //   to: "/manager/users",
-    //   value: "users",
-    //   label: "Users",
-    //   icon: <FaUsers />,
-    // },
-    // {
-    //   to: "/manager/new_user",
-    //   value: "new_user",
-    //   label: "New user",
-    //   icon: <FaUserPlus />,
-    // },
     {
       to: "/manager/stocks",
       value: "stocks",
@@ -86,19 +68,13 @@ export const dashboardRoutes: DashboardRoutes = {
     },
   ],
 
-  DEPARTMENT_DEAN: [
+  DEPARTMENT_HOD: [
     {
       to: "/department/requests",
       value: "home",
       label: "Requests",
       icon: <MdListAlt />,
     },
-    // {
-    //   to: "/department/new_request",
-    //   value: "new_request",
-    //   label: "New Request",
-    //   icon: <FaPlusSquare />,
-    // },
     {
       to: "/department/logs",
       value: "logs",
@@ -130,16 +106,30 @@ export const dashboardRoutes: DashboardRoutes = {
 
   CFO: [
     {
-      to: "/cfo/funds",
-      value: "funds",
-      label: "Funds",
-      icon: <FaMoneyCheckAlt />,
+      to: "/cfo/requests",
+      value: "requests",
+      label: "Requests",
+      icon: <MdEditNotifications />,
     },
     {
       to: "/cfo/logs",
       value: "logs",
       label: "All logs",
       icon: <TbLogs />,
+    },
+  ],
+  STOREKEEPER: [
+    {
+      to: "/storekeeper/requests",
+      value: "requests",
+      label: "Requests",
+      icon: <MdEditNotifications />,
+    },
+    {
+      to: "/storekeeper/stocks",
+      value: "stocks",
+      label: "Stocks",
+      icon: <MdInventory />,
     },
   ],
 };

@@ -20,7 +20,7 @@ const RequestTableHeader: React.FC<RequestTableHeaderProps> = ({
     switch (role) {
       case "ADMIN":
         return "Admin";
-      case "DEPARTMENT_DEAN":
+      case "DEPARTMENT_HOD":
         return "Department";
       case "PROCUREMENT_OFFICER":
         return "Storekeeper";
@@ -28,6 +28,8 @@ const RequestTableHeader: React.FC<RequestTableHeaderProps> = ({
         return "Manager";
       case "CFO":
         return "CFO";
+      case "STOREKEEPER":
+        return "Storekeeper";
     }
   };
   return (

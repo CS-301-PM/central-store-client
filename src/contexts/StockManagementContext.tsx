@@ -6,8 +6,8 @@ import {
   //   initialState,
 } from "../reducers/StockManagementReducer";
 import { StockAddingType, StockFetchedType } from "../types/Stocks";
-import { v4 as uuidv4 } from "uuid";
-import moment from "moment";
+// import { v4 as uuidv4 } from "uuid";
+// import moment from "moment";
 
 export type StockManagementContextType = {
   state: StockState;
@@ -17,6 +17,7 @@ export type StockManagementContextType = {
   updateStock: (stock: Stock) => void;
   deleteStock: (id: string) => void;
   moveStock: (id: string, newLocation: string) => void;
+  dashBoardStock: () => Promise<{}>;
 };
 
 export const StockManagementContext = createContext<
@@ -38,7 +39,7 @@ export const StockManagementProvider = ({
   const listAllStocks = async () => {
     const session = JSON.parse(localStorage.getItem("user") || "{}");
     const accessToken = session.token;
-    const URL = `${import.meta.env.VITE_SERVER}api/stocks/all`;
+    const URL = `${import.meta.env.VITE_SERVER}api/stocks`;
 
     try {
       const response = await fetch(URL, {
@@ -58,8 +59,39 @@ export const StockManagementProvider = ({
 
       dispatch({
         type: "LIST_ALL_STOCK",
-        payload: stocksData.stocks,
+        payload: stocksData,
       });
+    } catch (error) {
+      console.error("Error fetching stocks:", error);
+      throw error;
+    }
+  };
+  const dashBoardStock = async (): Promise<{}> => {
+    const session = JSON.parse(localStorage.getItem("user") || "{}");
+    const accessToken = session.token;
+    const URL = `${import.meta.env.VITE_SERVER}api/stocks/dashboard`;
+
+    try {
+      const response = await fetch(URL, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch stocks: ${response.status}`);
+      }
+
+      const res = await response.json();
+
+      dispatch({
+        type: "LIST_DASHBOARD_STOCK",
+        payload: res,
+      });
+      return res;
     } catch (error) {
       console.error("Error fetching stocks:", error);
       throw error;
@@ -72,7 +104,7 @@ export const StockManagementProvider = ({
   const addStock = async (stockToAdd: StockAddingType) => {
     const session = JSON.parse(localStorage.getItem("user") || "{}");
     const accessToken = session.token;
-    const URL = `${import.meta.env.VITE_SERVER}api/stocks/add`;
+    const URL = `${import.meta.env.VITE_SERVER}api/stocks/create`;
 
     try {
       const response = await fetch(URL, {
@@ -90,7 +122,7 @@ export const StockManagementProvider = ({
       }
 
       const res = await response.json();
-      dispatch({ type: "ADD_NEW_STOCK", payload: res.stock });
+      dispatch({ type: "ADD_NEW_STOCK", payload: res });
 
       return res;
     } catch (error) {
@@ -102,7 +134,7 @@ export const StockManagementProvider = ({
   const updateStock = async (stock) => {
     // console.log(stock);
     const session = JSON.parse(localStorage.getItem("user") || "{}");
-    const accessToken = session.access;
+    const accessToken = session.token;
     const URL = `${import.meta.env.VITE_SERVER}api/stocks/edit/${stock.id}`;
 
     try {
@@ -121,8 +153,7 @@ export const StockManagementProvider = ({
       }
 
       const res = await response.json();
-      console.log(res.stock);
-      dispatch({ type: "UPDATE_STOCK", payload: res.stock });
+      dispatch({ type: "UPDATE_STOCK", payload: res });
     } catch (error) {
       console.error("Error updating stock:", error);
       throw error;
@@ -131,8 +162,8 @@ export const StockManagementProvider = ({
 
   const deleteStock = async (id: string) => {
     const session = JSON.parse(localStorage.getItem("user") || "{}");
-    const accessToken = session.access;
-    const URL = `${import.meta.env.VITE_SERVER}/api/stocks/${id}/`;
+    const accessToken = session.token;
+    const URL = `${import.meta.env.VITE_SERVER}/api/stocks/delete${id}/`;
 
     try {
       const response = await fetch(URL, {
@@ -206,6 +237,7 @@ export const StockManagementProvider = ({
         updateStock,
         deleteStock,
         moveStock,
+        dashBoardStock,
       }}
     >
       {children}

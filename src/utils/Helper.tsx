@@ -6,31 +6,18 @@ export const getRedirectPath = (role: Role): string => {
       return "/admin/users";
     case "STORES_MANAGER":
       return "/manager/dashboard";
-    case "DEPARTMENT_DEAN":
+    case "DEPARTMENT_HOD":
       return "/department/requests";
     case "CFO":
       return "/cfo/funds";
     case "PROCUREMENT_OFFICER":
       return "/procurement/requests";
+    case "STOREKEEPER":
+      return "/storekeeper/requests";
     default:
       return "/";
   }
 };
-
-// type Request = {
-//   id: number;
-//   user_id: number;
-//   stock_id: number;
-//   item_name: string;
-//   quantity: number;
-//   priority: string;
-//   reason: string;
-//   status: string;
-//   department: string;
-//   blockchain_address: string;
-//   created_at: string;
-//   updated_at: string;
-// };
 
 export function groupRequestsByDepartment(requests) {
   const grouped: Record<string, Request[]> = {};

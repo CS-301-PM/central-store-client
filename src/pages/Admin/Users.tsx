@@ -10,6 +10,7 @@ import ReusableModal from "../../components/other/Modal";
 import { MdDelete } from "react-icons/md";
 import NewUserForm from "../Auth/NewUserForm";
 import ConfirmModal from "../../components/other/ConfirmModal";
+import moment from "moment";
 
 export default function UsersTablePage() {
   const { users, getAllUsers, deleteUser } = useUserContext();
@@ -40,7 +41,7 @@ export default function UsersTablePage() {
 
   const userColumns: Column<FetchedUser>[] = [
     { key: "id", label: "ID" },
-    { key: "blockchain_address", label: "blockchain address" },
+    // { key: "blockchain_address", label: "Type" },
     {
       key: "first_name",
       label: "Firstname",
@@ -60,41 +61,47 @@ export default function UsersTablePage() {
     { key: "email", label: "Email" },
     { key: "role", label: "Role" },
     { key: "department", label: "Department" },
-    {
-      key: "action",
-      label: "Actions",
-      align: "center",
-      render: (_, row) => (
-        <Box sx={{ display: "flex", gap: 1, justifyContent: "center" }}>
-          <ReusableModal buttonLabel="EDIT" title="Edit user">
-            <NewUserForm isNew={false} userToUpdate={row} />
-          </ReusableModal>
-          <Button
-            variant="outlined"
-            color="error"
-            size="small"
-            onClick={() => {
-              setOpen(true);
-            }}
-          >
-            <MdDelete />
-          </Button>
-          <ConfirmModal
-            open={open}
-            onClose={() => setOpen(false)}
-            onConfirm={() => {
-              handleDelete(row.id ?? "");
-              setOpen(false);
-            }}
-            title="Delete User"
-            description="This action is irreversible. Do you really want to delete this user?"
-            color="warning"
-            confirmLabel="Yes, Delete"
-            cancelLabel="Cancel"
-          />
-        </Box>
-      ),
-    },
+    // {
+    //   key: "created_at",
+    //   label: "Since",
+    //   render: (_, row) => moment(row.created_at).fromNow(),
+    // },
+
+    // {
+    //   key: "action",
+    //   label: "Actions",
+    //   align: "center",
+    //   render: (_, row) => (
+    //     <Box sx={{ display: "flex", gap: 1, justifyContent: "center" }}>
+    //       {/* <ReusableModal buttonLabel="EDIT" title="Edit user">
+    //         <NewUserForm isNew={false} userToUpdate={row} />
+    //       </ReusableModal>
+    //       <Button
+    //         variant="outlined"
+    //         color="error"
+    //         size="small"
+    //         onClick={() => {
+    //           setOpen(true);
+    //         }}
+    //       >
+    //         <MdDelete />
+    //       </Button> */}
+    //       {/* <ConfirmModal
+    //         open={open}
+    //         onClose={() => setOpen(false)}
+    //         onConfirm={() => {
+    //           handleDelete(row.id ?? "");
+    //           setOpen(false);
+    //         }}
+    //         title="Delete User"
+    //         description="This action is irreversible. Do you really want to delete this user?"
+    //         color="warning"
+    //         confirmLabel="Yes, Delete"
+    //         cancelLabel="Cancel"
+    //       /> */}
+    //     </Box>
+    //   ),
+    // },
   ];
 
   return (

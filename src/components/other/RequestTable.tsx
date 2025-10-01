@@ -43,26 +43,6 @@ export default function EnhancedTable({ role }: EnhancedTableProps) {
     getAllRequests();
   }, []);
 
-  // Assuming `requests` is your full list from the API
-  // const departmentRequests = React.useMemo(() => {
-  //   if (role !== "DEPARTMENT_DEAN") return [];
-
-  //   // Filter only the requests for the user's department
-  //   const deptRequests = requests.filter(
-  //     (req) => req.department === user?.user?.department
-  //   );
-
-  //   // Group by user_id
-  //   const groupedByUser = deptRequests.reduce((acc, req) => {
-  //     const userId = req.user_id;
-  //     if (!acc[userId]) acc[userId] = [];
-  //     acc[userId].push(req);
-  //     return acc;
-  //   }, {} as Record<number, typeof requests>);
-
-  //   return groupedByUser;
-  // }, [requests, role, user]);
-
   useEffect(() => {
     const grouped = groupRequestsByDepartment(requests);
     if (role === "DEPARTMENT_DEAN") {
@@ -74,7 +54,7 @@ export default function EnhancedTable({ role }: EnhancedTableProps) {
     }
   }, [requests, role, department]);
 
-  const filteredRows = rows.filter(
+  const filteredRows = rows?.filter(
     (row) =>
       (filterStatus === "All" ? true : row.status === filterStatus) &&
       (filterPriority === "All" ? true : row.priority === filterPriority)
@@ -145,7 +125,7 @@ export default function EnhancedTable({ role }: EnhancedTableProps) {
               </TableHead>
 
               <TableBody>
-                {filteredRows.map((request, index) => (
+                {filteredRows?.map((request, index) => (
                   <TableRow
                     key={request.id}
                     sx={{

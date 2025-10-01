@@ -8,9 +8,11 @@ export const DELETE_STOCK = "DELETE_STOCK";
 export const MOVE_STOCK = "MOVE_STOCK";
 export const REPORT_STOCK = "REPORT_STOCK";
 
+export const LIST_DASHBOARD_STOCK = "LIST_DASHBOARD_STOCK";
 export interface StockState {
   items: StockFetchedType[];
   selectedStock?: StockFetchedType | null;
+  stockDashboard?: { [key: string]: any };
 }
 
 type StockActionTypes =
@@ -19,11 +21,13 @@ type StockActionTypes =
   | { type: typeof ADD_NEW_STOCK; payload: StockAddingType }
   | { type: typeof UPDATE_STOCK; payload: StockFetchedType }
   | { type: typeof DELETE_STOCK; payload: StockFetchedType | string } // id
-  | { type: typeof MOVE_STOCK; payload: { id: string; newLocation: string } };
-
+  | { type: typeof MOVE_STOCK; payload: { id: string; newLocation: string } }
+  | { type: typeof ADD_NEW_STOCK; payload: StockAddingType }
+  | { type: typeof LIST_DASHBOARD_STOCK; payload: { [key: string]: any } };
 const initialState: StockState = {
   items: [],
   selectedStock: null,
+  stockDashboard: {},
 };
 
 export const stockReducer = (
@@ -33,7 +37,8 @@ export const stockReducer = (
   switch (action.type) {
     case LIST_ALL_STOCK:
       return { ...state, items: action.payload };
-
+    case LIST_DASHBOARD_STOCK:
+      return { ...state, stockDashboard: action.payload };
     case GET_ONE_STOCK:
       return { ...state, selectedStock: action.payload };
 
