@@ -19,10 +19,11 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
+  width: 600,
+  height: "auto",
   bgcolor: "background.paper",
   borderRadius: 2,
-  boxShadow: 24,
+  boxShadow: 30,
   p: 4,
 };
 
@@ -76,7 +77,7 @@ export default function ReusableModal({
               {description}
             </Typography>
           )}
-          {children && <Box sx={{ mt: 2 }}>{children}</Box>}
+          {children && <Box sx={{ mt: 0 }}>{children}</Box>}
         </Box>
       </Modal>
     </>

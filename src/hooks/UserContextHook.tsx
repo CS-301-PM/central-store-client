@@ -7,6 +7,7 @@ import {
   AuthUserState,
 } from "../types/auth";
 import { UserRegistration } from "../types/User";
+import { DepartmentType } from "../types/Departments";
 
 type UserContextType = {
   signUp: (userSignUp: UserSignUp) => Promise<void>;
@@ -15,15 +16,15 @@ type UserContextType = {
   deleteAccount: (userDeleteAccount: AuthUserState) => Promise<void>;
   updateUser: (userUpdate: FetchedUser) => Promise<void>;
   getAllUsers: () => Promise<FetchedUser[]>;
-  listDepartments: () => Promise<string[]>;
-  newDepartment: (departmentName: string) => Promise<void>;
+  listDepartments: () => Promise<DepartmentType[]>;
+  newDepartment: (departmentName: DepartmentType) => Promise<void>;
   deleteUser: (userId: string) => Promise<void>;
   addUser: (user: UserRegistration) => Promise<void>;
   isLoading: boolean;
   error?: ErrorResponse | null;
   user?: AuthUserState | null;
   users?: FetchedUser[] | null;
-  departments?: string[] | null;
+  departments?: DepartmentType[] | [];
 };
 
 const initialState: UserContextType = {
@@ -41,7 +42,7 @@ const initialState: UserContextType = {
   error: null,
   user: null,
   users: null,
-  departments: null,
+  departments: [],
 };
 
 export const UserContext = createContext<UserContextType>(initialState);

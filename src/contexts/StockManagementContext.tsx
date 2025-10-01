@@ -5,7 +5,9 @@ import {
   StockState,
   //   initialState,
 } from "../reducers/StockManagementReducer";
-// import { simpleStocks } from "../utils/Constants";
+import { StockAddingType, StockFetchedType } from "../types/Stocks";
+// import { v4 as uuidv4 } from "uuid";
+// import moment from "moment";
 
 export type StockManagementContextType = {
   state: StockState;
@@ -15,6 +17,7 @@ export type StockManagementContextType = {
   updateStock: (stock: Stock) => void;
   deleteStock: (id: string) => void;
   moveStock: (id: string, newLocation: string) => void;
+  dashBoardStock: () => Promise<{}>;
 };
 
 export const StockManagementContext = createContext<
@@ -35,8 +38,8 @@ export const StockManagementProvider = ({
 
   const listAllStocks = async () => {
     const session = JSON.parse(localStorage.getItem("user") || "{}");
-    const accessToken = session.access;
-    const URL = `${import.meta.env.VITE_SERVER}/api/stocks/`;
+    const accessToken = session.token;
+    const URL = `${import.meta.env.VITE_SERVER}api/stocks`;
 
     try {
       const response = await fetch(URL, {
@@ -54,14 +57,41 @@ export const StockManagementProvider = ({
 
       const stocksData = await response.json();
 
-      // console.log(stocksData);
-
       dispatch({
         type: "LIST_ALL_STOCK",
-        payload: stocksData.data, // the fetched stock list
+        payload: stocksData,
+      });
+    } catch (error) {
+      console.error("Error fetching stocks:", error);
+      throw error;
+    }
+  };
+  const dashBoardStock = async (): Promise<{}> => {
+    const session = JSON.parse(localStorage.getItem("user") || "{}");
+    const accessToken = session.token;
+    const URL = `${import.meta.env.VITE_SERVER}api/stocks/dashboard`;
+
+    try {
+      const response = await fetch(URL, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
       });
 
-      return stocksData;
+      if (!response.ok) {
+        throw new Error(`Failed to fetch stocks: ${response.status}`);
+      }
+
+      const res = await response.json();
+
+      dispatch({
+        type: "LIST_DASHBOARD_STOCK",
+        payload: res,
+      });
+      return res;
     } catch (error) {
       console.error("Error fetching stocks:", error);
       throw error;
@@ -71,10 +101,10 @@ export const StockManagementProvider = ({
   const getOneStock = (stock: Stock) =>
     dispatch({ type: "GET_ONE_STOCK", payload: stock });
 
-  const addStock = async (stock: Stock) => {
+  const addStock = async (stockToAdd: StockAddingType) => {
     const session = JSON.parse(localStorage.getItem("user") || "{}");
-    const accessToken = session.access;
-    const URL = `${import.meta.env.VITE_SERVER}/api/stocks/create/`;
+    const accessToken = session.token;
+    const URL = `${import.meta.env.VITE_SERVER}api/stocks/create`;
 
     try {
       const response = await fetch(URL, {
@@ -84,31 +114,32 @@ export const StockManagementProvider = ({
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify(stock),
+        body: JSON.stringify(stockToAdd),
       });
 
       if (!response.ok) {
         throw new Error(`Failed to add stock: ${response.status}`);
       }
 
-      const addedStock = await response.json();
+      const res = await response.json();
+      dispatch({ type: "ADD_NEW_STOCK", payload: res });
 
-      dispatch({ type: "ADD_NEW_STOCK", payload: addedStock });
-      return addedStock;
+      return res;
     } catch (error) {
       console.error("Error adding stock:", error);
       throw error;
     }
   };
 
-  const updateStock = async (stock: Stock) => {
+  const updateStock = async (stock) => {
+    // console.log(stock);
     const session = JSON.parse(localStorage.getItem("user") || "{}");
-    const accessToken = session.access;
-    const URL = `${import.meta.env.VITE_SERVER}/api/stocks/${stock.stockId}/`;
+    const accessToken = session.token;
+    const URL = `${import.meta.env.VITE_SERVER}api/stocks/edit/${stock.id}`;
 
     try {
       const response = await fetch(URL, {
-        method: "PUT", // or PATCH if your API supports partial update
+        method: "PUT",
         headers: {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
@@ -121,9 +152,8 @@ export const StockManagementProvider = ({
         throw new Error(`Failed to update stock: ${response.status}`);
       }
 
-      const updatedStock = await response.json();
-      dispatch({ type: "UPDATE_STOCK", payload: updatedStock });
-      return updatedStock;
+      const res = await response.json();
+      dispatch({ type: "UPDATE_STOCK", payload: res });
     } catch (error) {
       console.error("Error updating stock:", error);
       throw error;
@@ -132,8 +162,8 @@ export const StockManagementProvider = ({
 
   const deleteStock = async (id: string) => {
     const session = JSON.parse(localStorage.getItem("user") || "{}");
-    const accessToken = session.access;
-    const URL = `${import.meta.env.VITE_SERVER}/api/stocks/${id}/`;
+    const accessToken = session.token;
+    const URL = `${import.meta.env.VITE_SERVER}/api/stocks/delete${id}/`;
 
     try {
       const response = await fetch(URL, {
@@ -207,6 +237,7 @@ export const StockManagementProvider = ({
         updateStock,
         deleteStock,
         moveStock,
+        dashBoardStock,
       }}
     >
       {children}

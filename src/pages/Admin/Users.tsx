@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Column, ReusableTable } from "../../components/other/StocksTable";
+import { Column, ReusableTable } from "../../components/other/ReusableTable";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import BasicSelect from "../../components/other/BasicSelector";
@@ -9,12 +9,15 @@ import { roleOptions } from "../../types/User";
 import ReusableModal from "../../components/other/Modal";
 import { MdDelete } from "react-icons/md";
 import NewUserForm from "../Auth/NewUserForm";
+import ConfirmModal from "../../components/other/ConfirmModal";
+import moment from "moment";
 
 export default function UsersTablePage() {
   const { users, getAllUsers, deleteUser } = useUserContext();
 
   const [allUsers, setUsers] = useState<FetchedUser[]>([]);
   const [filterRole, setFilterRole] = useState<string>("All");
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     getAllUsers();
@@ -37,36 +40,68 @@ export default function UsersTablePage() {
       : allUsers.filter((user) => user.role === filterRole);
 
   const userColumns: Column<FetchedUser>[] = [
-    { key: "employeeId", label: "Employee ID" },
+    { key: "id", label: "ID" },
+    // { key: "blockchain_address", label: "Type" },
     {
-      key: "firstName",
-      label: "Name",
-      render: (_, row) => `${row.firstName} ${row.lastName}`,
+      key: "first_name",
+      label: "Firstname",
+      render: (_, row) => `${row.first_name}`,
+    },
+    {
+      key: "last_name",
+      label: "Lastname",
+      render: (_, row) => `${row.last_name}`,
+    },
+
+    {
+      key: "username",
+      label: "Username",
+      render: (_, row) => `${row.username}`,
     },
     { key: "email", label: "Email" },
     { key: "role", label: "Role" },
     { key: "department", label: "Department" },
-    { key: "status", label: "Status" },
-    {
-      key: "actions",
-      label: "Actions",
-      align: "center",
-      render: (_, row) => (
-        <Box sx={{ display: "flex", gap: 1, justifyContent: "center" }}>
-          <ReusableModal buttonLabel="EDIT" title="Edit user">
-            <NewUserForm isNew={false} userToUpdate={row} />
-          </ReusableModal>
-          <Button
-            variant="outlined"
-            color="error"
-            size="small"
-            onClick={() => handleDelete(row.id)}
-          >
-            <MdDelete />
-          </Button>
-        </Box>
-      ),
-    },
+    // {
+    //   key: "created_at",
+    //   label: "Since",
+    //   render: (_, row) => moment(row.created_at).fromNow(),
+    // },
+
+    // {
+    //   key: "action",
+    //   label: "Actions",
+    //   align: "center",
+    //   render: (_, row) => (
+    //     <Box sx={{ display: "flex", gap: 1, justifyContent: "center" }}>
+    //       {/* <ReusableModal buttonLabel="EDIT" title="Edit user">
+    //         <NewUserForm isNew={false} userToUpdate={row} />
+    //       </ReusableModal>
+    //       <Button
+    //         variant="outlined"
+    //         color="error"
+    //         size="small"
+    //         onClick={() => {
+    //           setOpen(true);
+    //         }}
+    //       >
+    //         <MdDelete />
+    //       </Button> */}
+    //       {/* <ConfirmModal
+    //         open={open}
+    //         onClose={() => setOpen(false)}
+    //         onConfirm={() => {
+    //           handleDelete(row.id ?? "");
+    //           setOpen(false);
+    //         }}
+    //         title="Delete User"
+    //         description="This action is irreversible. Do you really want to delete this user?"
+    //         color="warning"
+    //         confirmLabel="Yes, Delete"
+    //         cancelLabel="Cancel"
+    //       /> */}
+    //     </Box>
+    //   ),
+    // },
   ];
 
   return (
@@ -82,7 +117,7 @@ export default function UsersTablePage() {
       </Box>
 
       {/* Table */}
-      <ReusableTable<FetchedUser>
+      <ReusableTable<{ id: "" }>
         columns={userColumns}
         data={filteredUsers}
         getRowStyle={(_, index) => ({

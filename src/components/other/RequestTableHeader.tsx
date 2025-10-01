@@ -20,7 +20,7 @@ const RequestTableHeader: React.FC<RequestTableHeaderProps> = ({
     switch (role) {
       case "ADMIN":
         return "Admin";
-      case "DEPARTMENT_DEAN":
+      case "DEPARTMENT_HOD":
         return "Department";
       case "PROCUREMENT_OFFICER":
         return "Storekeeper";
@@ -28,12 +28,16 @@ const RequestTableHeader: React.FC<RequestTableHeaderProps> = ({
         return "Manager";
       case "CFO":
         return "CFO";
+      case "STOREKEEPER":
+        return "Storekeeper";
     }
   };
   return (
     <div className="requestTableHeader p-4 bg-light rounded d-flex justify-content-between align-items-center">
       <div>
-        <h2 className="mb-0">{userRole(role)}</h2>
+        <h2 className="mb-0">{`${userRole(role)} (${
+          user?.user?.department
+        })`}</h2>
         <h3 className="mb-0 text-muted">{title}</h3>
         {subtitle && <small className="text-muted">{subtitle}</small>}
       </div>

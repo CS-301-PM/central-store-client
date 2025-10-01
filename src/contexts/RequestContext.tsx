@@ -12,6 +12,7 @@ export type RequestManagementContextType = {
   makeRequest: (req: RequestObj) => void;
   getAllRequests: () => void;
   updateRequestStatus: (requestId: string, statusType: StatusType) => void;
+  dashboardRequest: () => void;
 };
 
 export const RequestManagementContext = createContext<
@@ -27,8 +28,8 @@ export const RequestManagementProvider = ({
 
   const makeRequest = async (newRequest: RequestObj) => {
     const session = JSON.parse(localStorage.getItem("user") || "{}");
-    const accessToken = session.access;
-    const URL = `${import.meta.env.VITE_SERVER}api/requests/`;
+    const accessToken = session.token;
+    const URL = `${import.meta.env.VITE_SERVER}api/requests`;
 
     state.loading = true;
 
@@ -46,10 +47,10 @@ export const RequestManagementProvider = ({
       if (!response.ok)
         throw new Error(`Failed to make request: ${response.status}`);
 
-      const respondedRequest: FetchedRequestObj = await response.json();
+      const res = await response.json();
 
-      dispatch({ type: "MAKE_REQUEST", payload: respondedRequest });
-      return respondedRequest;
+      dispatch({ type: "MAKE_REQUEST", payload: res });
+      return res;
     } catch (error) {
       console.error("Error making request:", error);
       throw error;
@@ -60,8 +61,8 @@ export const RequestManagementProvider = ({
 
   const getAllRequests = async () => {
     const session = JSON.parse(localStorage.getItem("user") || "{}");
-    const accessToken = session.access;
-    const URL = `${import.meta.env.VITE_SERVER}/api/requests/`;
+    const accessToken = session.token;
+    const URL = `${import.meta.env.VITE_SERVER}api/requests`;
 
     state.loading = true;
 
@@ -74,14 +75,14 @@ export const RequestManagementProvider = ({
         },
         credentials: "include",
       });
+      if (!response.ok) {
+        return;
+      }
 
-      if (!response.ok)
-        throw new Error(`Failed to fetch requests: ${response.status}`);
-
-      const requests: FetchedRequestObj[] = await response.json();
-
-      dispatch({ type: "LIST_ALL_REQUESTS", payload: requests });
-      return requests;
+      const res = await response.json();
+      // console.log("Fetched requests:", res);
+      dispatch({ type: "LIST_ALL_REQUESTS", payload: res });
+      return res;
     } catch (error) {
       console.error("Error fetching requests:", error);
       throw error;
@@ -95,16 +96,14 @@ export const RequestManagementProvider = ({
     statusType: StatusType
   ) => {
     const session = JSON.parse(localStorage.getItem("user") || "{}");
-    const accessToken = session.access;
-    const URL = `${
-      import.meta.env.VITE_SERVER
-    }/api/requests/${requestId}/status/`;
+    const accessToken = session.token;
+    const URL = `${import.meta.env.VITE_SERVER}api/requests/edit/${requestId}`;
 
     state.loading = true;
 
     try {
       const response = await fetch(URL, {
-        method: "PATCH",
+        method: "PUT",
         headers: {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
@@ -117,6 +116,8 @@ export const RequestManagementProvider = ({
         throw new Error(`Failed to update status: ${response.status}`);
 
       const updatedRequest: FetchedRequestObj = await response.json();
+
+      console.log(updatedRequest);
 
       dispatch({
         type: "UPDATE_REQUEST_STATUS",
@@ -132,6 +133,43 @@ export const RequestManagementProvider = ({
     }
   };
 
+  const dashboardRequest = async () => {
+    const session = JSON.parse(localStorage.getItem("user") || "{}");
+    const accessToken = session.token;
+    const URL = `${import.meta.env.VITE_SERVER}api/requests/dashboard`;
+
+    state.loading = true;
+
+    try {
+      const response = await fetch(URL, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        // body: JSON.stringify({ status: statusType }),
+      });
+
+      if (!response.ok)
+        throw new Error(`Failed to update status: ${response.status}`);
+
+      const res = await response.json();
+
+      dispatch({
+        type: "REQUESTS_DASHBOARD",
+        payload: res,
+      });
+
+      return res;
+    } catch (error) {
+      console.error("Error updating request status:", error);
+      throw error;
+    } finally {
+      state.loading = false;
+    }
+  };
+
   return (
     <RequestManagementContext.Provider
       value={{
@@ -139,6 +177,7 @@ export const RequestManagementProvider = ({
         makeRequest,
         getAllRequests,
         updateRequestStatus,
+        dashboardRequest,
       }}
     >
       {children}

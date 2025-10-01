@@ -1,23 +1,16 @@
-export type Department =
-  | "registry"
-  | "finance"
-  | "human-resources"
-  | "procurement"
-  | "library"
-  | "ict";
-
 import { Role } from "./User";
 
 export interface FetchedUser {
   id?: string;
   role: Role;
-  firstName: string;
-  lastName: string;
+  last_name?: string;
+  first_name?: string;
   email?: string;
-  employeeId?: string;
-  department?: Department | "";
-  status?: "active" | "inactive";
-  blockchainId?: string;
+  username?: string;
+  department?: "";
+  blockchain_address?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export type AuthUserState = {
@@ -32,28 +25,32 @@ export type AuthUserState = {
 };
 
 export type UserSignIn = {
-  employeeId: string;
-  email: string;
+  username?: string;
+  password?: string;
 };
 
-export type UserSignUp = {} & UserSignIn & {
-    firstName: string;
-    lastName: string;
-    role: Role;
-  };
-
-type ErrorBody = {
-  message: string;
-  type: string;
-  value: string;
+export type UserSignUp = {
+  role: Role;
+  last_name?: string;
+  first_name?: string;
+  email?: string;
+  username?: string;
+  department?: "";
+  password?: string;
 };
 
-export type ErrorResponse = {
-  errors: {
-    [
-      key: string | "employeeId" | "firstName" | "lastName" | "email" | "role"
-    ]: ErrorBody;
-  };
-};
+// type ErrorBody = {
+//   message: string;
+//   type: string;
+//   value: string;
+// };
+
+// export type ErrorResponse = {
+//   errors: {
+//     [
+//       key: string | "employeeId" | "firstName" | "lastName" | "email" | "role"
+//     ]: ErrorBody;
+//   };
+// };
 
 //

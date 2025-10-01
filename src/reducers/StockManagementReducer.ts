@@ -1,3 +1,5 @@
+import { StockAddingType, StockFetchedType } from "../types/Stocks";
+
 export const LIST_ALL_STOCK = "LIST_ALL_STOCK";
 export const GET_ONE_STOCK = "GET_ONE_STOCK";
 export const ADD_NEW_STOCK = "ADD_NEW_STOCK";
@@ -6,33 +8,26 @@ export const DELETE_STOCK = "DELETE_STOCK";
 export const MOVE_STOCK = "MOVE_STOCK";
 export const REPORT_STOCK = "REPORT_STOCK";
 
-export interface Stock {
-  stockId?: string;
-  itemName?: string;
-  originalQuantity?: number;
-  currentQuantity?: number;
-  costEach?: number;
-  totalCost?: number;
-  dateIn?: string;
-}
-
+export const LIST_DASHBOARD_STOCK = "LIST_DASHBOARD_STOCK";
 export interface StockState {
-  items: Stock[];
-  selectedStock?: Stock | null;
+  items: StockFetchedType[];
+  selectedStock?: StockFetchedType | null;
+  stockDashboard?: { [key: string]: any };
 }
 
 type StockActionTypes =
-  | { type: typeof LIST_ALL_STOCK; payload: Stock[] }
-  | { type: typeof GET_ONE_STOCK; payload: Stock }
-  | { type: typeof ADD_NEW_STOCK; payload: Stock }
-  | { type: typeof UPDATE_STOCK; payload: Stock }
-  | { type: typeof DELETE_STOCK; payload: string } // id
+  | { type: typeof LIST_ALL_STOCK; payload: StockFetchedType[] }
+  | { type: typeof GET_ONE_STOCK; payload: StockFetchedType }
+  | { type: typeof ADD_NEW_STOCK; payload: StockAddingType }
+  | { type: typeof UPDATE_STOCK; payload: StockFetchedType }
+  | { type: typeof DELETE_STOCK; payload: StockFetchedType | string } // id
   | { type: typeof MOVE_STOCK; payload: { id: string; newLocation: string } }
-  | { type: typeof REPORT_STOCK; payload: any }; // can refine later
-
+  | { type: typeof ADD_NEW_STOCK; payload: StockAddingType }
+  | { type: typeof LIST_DASHBOARD_STOCK; payload: { [key: string]: any } };
 const initialState: StockState = {
   items: [],
   selectedStock: null,
+  stockDashboard: {},
 };
 
 export const stockReducer = (
@@ -42,7 +37,8 @@ export const stockReducer = (
   switch (action.type) {
     case LIST_ALL_STOCK:
       return { ...state, items: action.payload };
-
+    case LIST_DASHBOARD_STOCK:
+      return { ...state, stockDashboard: action.payload };
     case GET_ONE_STOCK:
       return { ...state, selectedStock: action.payload };
 
@@ -73,11 +69,6 @@ export const stockReducer = (
         ),
       };
 
-    case REPORT_STOCK:
-      // handle reporting logic later
-      return state;
-
-    default:
       return state;
   }
 };
