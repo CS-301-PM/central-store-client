@@ -32,6 +32,13 @@ export type DashboardRoutes = {
 
 export const dashboardRoutes: DashboardRoutes = {
   ADMIN: [
+    {
+      to: "/admin/dashboard",
+      value: "dashboard",
+      label: "Dashboard",
+      icon: <MdDashboard />,
+    },
+
     { to: "/admin/users", value: "users", label: "Users", icon: <MdPeople /> },
     {
       to: "/admin/logs",

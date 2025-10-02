@@ -1,41 +1,52 @@
 import { useEffect } from "react";
-import { useUserContext } from "../../hooks/UserContextHook";
+import { useOverviewContext } from "../../hooks/useOverviewContext";
+import DashBoardComp from "./DashBoardComp";
 import RequestTableHeader from "../../components/other/RequestTableHeader";
-import { useRequestManagementContext } from "../../hooks/useRequestHook";
-import { useStockManagementContext } from "../../hooks/useStockManagementContext";
 
-import "./Dashboard.css";
 function Dashboard() {
-  const { user, users, getAllUsers } = useUserContext();
-  const role = user?.user?.role;
-  const { getAllRequests, state, dashboardRequest } =
-    useRequestManagementContext();
-  const { requests, requestDashboard } = state;
-  const { dashBoardStock, state: stockState } = useStockManagementContext();
-  const { stockDashboard } = stockState;
+  const {
+    // logs,
+    stocks,
+    requests,
+    approvals,
+    // getAnalyticsLogs,
+    getAnalyticsStocks,
+    getAnalyticsRequests,
+    getAnalyticsApprovals,
+    isLoading,
+    error,
+  } = useOverviewContext();
 
+  // Fetch all analytics on mount
   useEffect(() => {
-    getAllRequests();
-    getAllUsers();
-    dashBoardStock();
-    dashboardRequest();
-  }, []);
+    // getAnalyticsLogs();
+    getAnalyticsStocks();
+    getAnalyticsRequests();
+    getAnalyticsApprovals();
+  }, [
+    // getAnalyticsLogs,
+    getAnalyticsStocks,
+    getAnalyticsRequests,
+    getAnalyticsApprovals,
+  ]);
 
-  useEffect(() => {
-    console.log(stockDashboard);
-    console.log(requestDashboard);
-  }, []);
+  // console.log(stocks, requests, approvals);
+
+  if (isLoading) return <div>Loading analytics...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
-    <>
-      <div>
-        <RequestTableHeader
-          title="Dashboard"
-          subtitle="Overview of the management."
-        />
-      </div>
-      <div className="">Analytics</div>
-    </>
+    <div className="m-3">
+      <RequestTableHeader
+        title="  Inventory Dashboard"
+        subtitle="Real-time overview of your inventory management system"
+      ></RequestTableHeader>
+      <DashBoardComp
+        stocks={stocks}
+        requests={requests}
+        approvals={approvals}
+      />
+    </div>
   );
 }
 

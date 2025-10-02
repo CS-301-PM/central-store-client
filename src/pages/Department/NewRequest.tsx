@@ -17,8 +17,8 @@ function NewRequest() {
   const [stockId, setStockId] = React.useState("1");
 
   const { user, isLoading } = useUserContext();
-  const { makeRequest, state } = useRequestManagementContext();
-  const { loading, error } = state;
+  const { makeRequest, requestState } = useRequestManagementContext();
+  const { loading, error } = requestState;
 
   const [possibleItems, setPossibleItems] = React.useState<
     { value: string; label: string }[]
@@ -27,19 +27,27 @@ function NewRequest() {
   React.useEffect(() => {
     const fetchStocks = async () => {
       try {
-        const URL = `${import.meta.env.VITE_SERVER}api/stocks/available`;
+        const session = JSON.parse(localStorage.getItem("user") || "{}");
+        const accessToken = session.token;
+        const URL = `${import.meta.env.VITE_SERVER}api/stocks`;
 
-        const response = await fetch(URL);
+        const response = await fetch(URL, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        });
         const res = await response.json();
 
-        const availableItems = res.stocks
+        const availableItems = res
           .filter((stock) => stock.available)
           .map((stock) => ({
             value: stock.item_name,
             label: stock.item_name,
           }));
 
-        // Optional: remove duplicates
         const uniqueItems = Array.from(
           new Map(availableItems.map((i) => [i.value, i])).values()
         );
@@ -68,13 +76,15 @@ function NewRequest() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    // console.log(item);
+    // console.log(possibleItems);
     if (!item || !quantity || !reason || !priority || !requesterId) {
       alert("Please fill all required fields");
       return;
     }
 
     await makeRequest({
+      // newRequest: {
       user_id: user?.user?.id,
       stock_id: stockId,
       item_name: item,
@@ -82,6 +92,9 @@ function NewRequest() {
       priority: priority,
       reason: reason,
       department: user?.user?.department,
+      type: "CONSUMPTION",
+      // },
+      // department: user?.user?.department,
     });
   };
 
@@ -92,7 +105,10 @@ function NewRequest() {
           label="Item Name"
           value={item}
           options={possibleItems}
-          onChange={(value) => setItem(String(value))}
+          onChange={(value) => {
+            // console.log(value);
+            setItem(String(value));
+          }}
         />
 
         <div className="paralellInputs">

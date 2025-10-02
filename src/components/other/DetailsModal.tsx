@@ -14,8 +14,8 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 550,
-  maxHeight: "80vh",
+  width: "900",
+  maxHeight: "auto",
   overflowY: "auto",
   bgcolor: "background.paper",
   borderRadius: 2,
@@ -35,22 +35,22 @@ export default function DetailsModal({
       open={open}
       onClose={onClose}
       BackdropProps={{
-        sx: { backgroundColor: "rgba(0,0,0,0.4)" },
+        sx: { backgroundColor: "rgba(0,0,0,0.6)" },
       }}
     >
       <Box sx={style}>
         <Typography variant="h6" gutterBottom>
           {title}
         </Typography>
-        <Divider sx={{ mb: 2 }} />
+        <Divider sx={{ mb: 0 }} />
 
         {children}
 
-        <Stack direction="row" justifyContent="flex-end" sx={{ mt: 3 }}>
+        {/* <Stack direction="row" justifyContent="flex-end" sx={{ mt: 3 }}>
           <Button variant="contained" onClick={onClose}>
             {closeLabel}
           </Button>
-        </Stack>
+        </Stack> */}
       </Box>
     </Modal>
   );

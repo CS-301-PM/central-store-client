@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -6,6 +7,7 @@ import {
   Navigate,
   Outlet,
 } from "react-router-dom";
+
 import { useUserContext } from "./hooks/UserContextHook";
 
 import Layout from "./components/layout/Layout";
@@ -15,12 +17,41 @@ import Admin from "./pages/Admin/Admin";
 import LoginForm from "./pages/Auth/LoginForm";
 import { getRedirectPath } from "./utils/Helper";
 
-import "./App.css";
 import Logs from "./pages/Common/Logs";
 import Requests from "./pages/Common/Requests";
 import StockTablePage from "./pages/Common/Stocks";
 import Dashboard from "./pages/Manager/Dashboard";
-import { useEffect } from "react";
+import Pendings from "./pages/Requests/Pendings";
+import All from "./pages/Requests/All";
+import Approved from "./pages/Requests/Approved";
+import Rejected from "./pages/Requests/Rejected";
+import AdminDashboard from "./pages/Admin/Dashboard";
+
+const requestRoutes = (
+  <Route path="requests" element={<Requests />}>
+    <Route index element={<All />} />
+    <Route path="pending" element={<Pendings />} />
+    <Route path="approved" element={<Approved />} />
+    <Route path="rejected" element={<Rejected />} />
+  </Route>
+);
+
+const roleRoutes = (
+  role: string,
+  allowedRoles: string[],
+  children: React.ReactNode
+) => (
+  <Route
+    path={role.toLowerCase()}
+    element={
+      <ProtectedRoutes role={role} allowedRoles={allowedRoles}>
+        <Outlet />
+      </ProtectedRoutes>
+    }
+  >
+    {children}
+  </Route>
+);
 
 function App() {
   const { user } = useUserContext();
@@ -31,7 +62,7 @@ function App() {
     if (role) {
       // Navigate(getRedirectPath(role), { replace: true });
     }
-  }, [role, Navigate]);
+  }, [role]);
 
   // If no user session, show login
   if (!user || !user.user) {
@@ -43,94 +74,73 @@ function App() {
     const router = createBrowserRouter(
       createRoutesFromElements(
         <>
-          {/* Default redirect for each role */}
-
           <Route path="/" element={<Layout />}>
             <Route index element={<Navigate to={getRedirectPath(role)} />} />
+
             {/* ADMIN */}
-            <Route
-              path="admin"
-              element={
-                <ProtectedRoutes role={role} allowedRoles={["ADMIN"]}>
-                  <Outlet />
-                </ProtectedRoutes>
-              }
-            >
-              <Route path="users" element={<Admin />} />
-              <Route path="logs" element={<Logs role={role} />} />
-            </Route>
+            {roleRoutes(
+              "admin",
+              ["ADMIN"],
+              <>
+                <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="users" element={<Admin />} />
+                <Route path="logs" element={<Logs role={role} />} />
+              </>
+            )}
 
             {/* DEPARTMENT_HOD */}
-            <Route
-              path="department"
-              element={
-                <ProtectedRoutes role={role} allowedRoles={["DEPARTMENT_HOD"]}>
-                  <Outlet />
-                </ProtectedRoutes>
-              }
-            >
-              <Route path="requests" element={<Requests role={role} />} />
-              <Route path="logs" element={<Logs role={role} />} />
-            </Route>
+            {roleRoutes(
+              "department",
+              ["DEPARTMENT_HOD"],
+              <>
+                {requestRoutes}
+                <Route path="logs" element={<Logs role={role} />} />
+              </>
+            )}
 
             {/* CFO */}
-            <Route
-              path="cfo"
-              element={
-                <ProtectedRoutes role={role} allowedRoles={["CFO"]}>
-                  <Outlet />
-                </ProtectedRoutes>
-              }
-            >
-              <Route path="requests" element={<Requests role={role} />} />
-              <Route path="logs" element={<Logs role={role} />} />
-            </Route>
+            {roleRoutes(
+              "cfo",
+              ["CFO"],
+              <>
+                {requestRoutes}
+                <Route path="logs" element={<Logs role={role} />} />
+              </>
+            )}
 
             {/* STORES_MANAGER */}
-            <Route
-              path="manager"
-              element={
-                <ProtectedRoutes role={role} allowedRoles={["STORES_MANAGER"]}>
-                  <Outlet />
-                </ProtectedRoutes>
-              }
-            >
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="stocks" element={<StockTablePage role={role} />} />
-              <Route path="requests" element={<Requests role={role} />} />
-              <Route path="logs" element={<Logs role={role} />} />
-            </Route>
+            {roleRoutes(
+              "manager",
+              ["STORES_MANAGER"],
+              <>
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="stocks" element={<StockTablePage role={role} />} />
+                {requestRoutes}
+                <Route path="logs" element={<Logs role={role} />} />
+              </>
+            )}
 
             {/* PROCUREMENT_OFFICER */}
-            <Route
-              path="procurement"
-              element={
-                <ProtectedRoutes
-                  role={role}
-                  allowedRoles={["PROCUREMENT_OFFICER"]}
-                >
-                  <Outlet />
-                </ProtectedRoutes>
-              }
-            >
-              <Route path="requests" element={<Requests role={role} />} />
-              <Route path="stocks" element={<StockTablePage role={role} />} />
-              <Route path="logs" element={<Logs role={role} />} />
-            </Route>
+            {roleRoutes(
+              "procurement",
+              ["PROCUREMENT_OFFICER"],
+              <>
+                {requestRoutes}
+                <Route path="stocks" element={<StockTablePage role={role} />} />
+                <Route path="logs" element={<Logs role={role} />} />
+              </>
+            )}
 
             {/* STOREKEEPER */}
-            <Route
-              path="storekeeper"
-              element={
-                <ProtectedRoutes role={role} allowedRoles={["STOREKEEPER"]}>
-                  <Outlet />
-                </ProtectedRoutes>
-              }
-            >
-              <Route path="requests" element={<Requests role={role} />} />
-              <Route path="stocks" element={<StockTablePage role={role} />} />
-              <Route path="logs" element={<Logs role={role} />} />
-            </Route>
+            {roleRoutes(
+              "storekeeper",
+              ["STOREKEEPER"],
+              <>
+                {requestRoutes}
+                <Route path="stocks" element={<StockTablePage role={role} />} />
+                <Route path="logs" element={<Logs role={role} />} />
+              </>
+            )}
           </Route>
 
           {/* catch-all */}

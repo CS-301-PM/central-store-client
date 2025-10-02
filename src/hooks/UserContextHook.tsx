@@ -1,6 +1,5 @@
 import { createContext, useContext } from "react";
 import {
-  ErrorResponse,
   FetchedUser,
   UserSignIn,
   UserSignUp,
@@ -21,7 +20,7 @@ type UserContextType = {
   deleteUser: (userId: string) => Promise<void>;
   addUser: (user: UserRegistration) => Promise<void>;
   isLoading: boolean;
-  error?: ErrorResponse | null;
+  error?: null;
   user?: AuthUserState | null;
   users?: FetchedUser[] | null;
   departments?: DepartmentType[] | [];

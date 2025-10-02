@@ -1,15 +1,10 @@
 import { createContext, useReducer, ReactNode } from "react";
-import {
-  requestReducer,
-  initialState,
-  RequestState,
-} from "../reducers/RequestsReducer";
-import { FetchedRequestObj, RequestObj, StatusType } from "../types/Request";
-// import { mockRequests } from "../utils/Constants";
+import { requestReducer, initialState } from "../reducers/RequestsReducer";
+import { FetchedRequestObj, StatusType } from "../types/Request";
 
 export type RequestManagementContextType = {
-  state: RequestState;
-  makeRequest: (req: RequestObj) => void;
+  requestState: { all: []; pending: []; approved: []; rejected: [] };
+  makeRequest: (req: any) => void;
   getAllRequests: () => void;
   updateRequestStatus: (requestId: string, statusType: StatusType) => void;
   dashboardRequest: () => void;
@@ -24,14 +19,15 @@ export const RequestManagementProvider = ({
 }: {
   children: ReactNode;
 }) => {
-  const [state, dispatch] = useReducer(requestReducer, initialState);
+  const [requestState, dispatch] = useReducer(requestReducer, initialState);
 
-  const makeRequest = async (newRequest: RequestObj) => {
+  const makeRequest = async (newRequest: any) => {
     const session = JSON.parse(localStorage.getItem("user") || "{}");
     const accessToken = session.token;
     const URL = `${import.meta.env.VITE_SERVER}api/requests`;
+    requestState.loading = true;
 
-    state.loading = true;
+    console.log(newRequest);
 
     try {
       const response = await fetch(URL, {
@@ -40,7 +36,7 @@ export const RequestManagementProvider = ({
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
-        credentials: "include",
+
         body: JSON.stringify(newRequest),
       });
 
@@ -48,14 +44,18 @@ export const RequestManagementProvider = ({
         throw new Error(`Failed to make request: ${response.status}`);
 
       const res = await response.json();
+      // console.log(res);
 
-      dispatch({ type: "MAKE_REQUEST", payload: res });
-      return res;
+      dispatch({
+        type: "MAKE_REQUEST",
+        payload: res,
+      });
+      // return res;
     } catch (error) {
       console.error("Error making request:", error);
       throw error;
     } finally {
-      state.loading = false;
+      requestState.loading = false;
     }
   };
 
@@ -64,7 +64,7 @@ export const RequestManagementProvider = ({
     const accessToken = session.token;
     const URL = `${import.meta.env.VITE_SERVER}api/requests`;
 
-    state.loading = true;
+    requestState.loading = true;
 
     try {
       const response = await fetch(URL, {
@@ -73,21 +73,19 @@ export const RequestManagementProvider = ({
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
-        credentials: "include",
       });
       if (!response.ok) {
         return;
       }
 
       const res = await response.json();
-      // console.log("Fetched requests:", res);
-      dispatch({ type: "LIST_ALL_REQUESTS", payload: res });
+      dispatch({ type: "LIST_ALL_REQUESTS", payload: res.groupedRequests });
       return res;
     } catch (error) {
       console.error("Error fetching requests:", error);
       throw error;
     } finally {
-      state.loading = false;
+      requestState.loading = false;
     }
   };
 
@@ -108,7 +106,6 @@ export const RequestManagementProvider = ({
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
-        credentials: "include",
         body: JSON.stringify({ status: statusType }),
       });
 
@@ -147,7 +144,7 @@ export const RequestManagementProvider = ({
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
-        credentials: "include",
+
         // body: JSON.stringify({ status: statusType }),
       });
 
@@ -173,7 +170,7 @@ export const RequestManagementProvider = ({
   return (
     <RequestManagementContext.Provider
       value={{
-        state,
+        requestState,
         makeRequest,
         getAllRequests,
         updateRequestStatus,

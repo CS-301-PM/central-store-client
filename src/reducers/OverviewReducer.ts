@@ -1,42 +1,59 @@
-// reducers/overviewReducer.ts
-import { NotificationType } from "../types/overview";
-
 // Action Types
-export const SET_OVERVIEW_COUNTS = "SET_OVERVIEW_COUNTS";
-export const SET_NOTIFICATIONS = "SET_NOTIFICATIONS";
+export const GET_LOGS_ANALYTICS = "GET_LOGS_ANALYTICS";
+export const GET_STOCK_ANALYTICS = "GET_STOCK_ANALYTICS";
+export const GET_REQUEST_ANALYTICS = "GET_REQUEST_ANALYTICS";
+export const GET_APPROVALS_ANALYTICS = "GET_APPROVALS_ANALYTICS";
 
-interface OverviewState {
-  approved: number;
-  declined: number;
-  inProcess: number;
-  notifications: NotificationType[];
+// State interface
+interface Analytics {
+  logs: any;
+  stocks: any;
+  requests: any;
+  approvals: any;
 }
 
 // Initial state
-const initialState: OverviewState = {
-  approved: 0,
-  declined: 0,
-  inProcess: 0,
-  notifications: [],
+const initialState: Analytics = {
+  logs: {},
+  stocks: {},
+  requests: {},
+  approvals: {},
 };
 
-type OverviewActionTypes =
-  | {
-      type: typeof SET_OVERVIEW_COUNTS;
-      payload: { approved: number; declined: number; inProcess: number };
-    }
-  | { type: typeof SET_NOTIFICATIONS; payload: NotificationType[] };
+// Action types
+type AnalyticsActionTypes =
+  | { type: typeof GET_LOGS_ANALYTICS; payload: any }
+  | { type: typeof GET_STOCK_ANALYTICS; payload: any }
+  | { type: typeof GET_REQUEST_ANALYTICS; payload: any }
+  | { type: typeof GET_APPROVALS_ANALYTICS; payload: any };
 
-export const overviewReducer = (
-  state: OverviewState = initialState,
-  action: OverviewActionTypes
-): OverviewState => {
+// Reducer
+export const analyticsReducer = (
+  analyticsState: Analytics = initialState,
+  action: AnalyticsActionTypes
+): Analytics => {
   switch (action.type) {
-    case SET_OVERVIEW_COUNTS:
-      return { ...state, ...action.payload };
-    case SET_NOTIFICATIONS:
-      return { ...state, notifications: action.payload };
+    case GET_LOGS_ANALYTICS:
+      return {
+        ...analyticsState,
+        logs: action.payload,
+      };
+    case GET_STOCK_ANALYTICS:
+      return {
+        ...analyticsState,
+        stocks: action.payload,
+      };
+    case GET_REQUEST_ANALYTICS:
+      return {
+        ...analyticsState,
+        requests: action.payload,
+      };
+    case GET_APPROVALS_ANALYTICS:
+      return {
+        ...analyticsState,
+        approvals: action.payload,
+      };
     default:
-      return state;
+      return analyticsState;
   }
 };

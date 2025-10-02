@@ -1,15 +1,11 @@
 import { createContext, useReducer, ReactNode } from "react";
-import {
-  approvalReducer,
-  initialState,
-  ApprovalState,
-} from "../reducers/ApprovalReducer";
+import { approvalReducer, initialState } from "../reducers/ApprovalReducer";
 
 export type ApprovalManagementContextType = {
-  approvalState: ApprovalState;
+  approvalState: typeof initialState;
   pendingApprovals: () => Promise<void>;
   approve: (itemId: number) => Promise<any>;
-  reject: (itemId: number) => Promise<any>;
+  reject: (itemId: number, reason: string) => Promise<any>;
 };
 
 export const ApprovalManagementContext = createContext<
@@ -37,7 +33,6 @@ export const ApprovalManagementProvider = ({
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
-        credentials: "include",
       });
 
       if (!response.ok)
@@ -54,7 +49,6 @@ export const ApprovalManagementProvider = ({
     const session = JSON.parse(localStorage.getItem("user") || "{}");
     const accessToken = session.token;
     const URL = `${import.meta.env.VITE_SERVER}api/approvals/${itemId}/approve`;
-
     dispatch({ type: "LOADING" });
     try {
       const response = await fetch(URL, {
@@ -63,7 +57,6 @@ export const ApprovalManagementProvider = ({
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
-        credentials: "include",
       });
 
       if (!response.ok) return;
@@ -76,7 +69,7 @@ export const ApprovalManagementProvider = ({
     }
   };
 
-  const reject = async (itemId: number) => {
+  const reject = async (itemId: number, reason: string) => {
     const session = JSON.parse(localStorage.getItem("user") || "{}");
     const accessToken = session.token;
     const URL = `${import.meta.env.VITE_SERVER}api/approvals/${itemId}/reject`;
@@ -89,7 +82,8 @@ export const ApprovalManagementProvider = ({
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
-        credentials: "include",
+
+        body: JSON.stringify({ reason }),
       });
 
       if (!response.ok) return;

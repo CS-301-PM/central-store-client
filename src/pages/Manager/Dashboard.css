@@ -1,29 +1,70 @@
-/* Mobile Devices (portrait and landscape) up to 767px */
-@media only screen and (max-width: 567px) {
-  .chartsDiv {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-gap: 1rem;
-    padding: 1rem;
-  }
+/* .dashboard-container {
+  padding: 20px;
+  font-family: sans-serif;
+  background-color: #f9fafb;
 }
 
-/* Tablets and Min Laptops 768px */
-@media only screen and (min-width: 568px) {
-  .chartsDiv {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-gap: 1rem;
-    padding: 1rem;
-  }
+.summary-cards {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
 }
 
-/* Desktops and larger screens 1340px*/
-@media only screen and (min-width: 840px) {
-  .chartsDiv {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-gap: 1rem;
-    padding: 1rem;
-  }
+.card {
+  flex: 1;
+  min-width: 120px;
+  background: #fff;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  text-align: center;
 }
+
+.alerts-section {
+  background: #fff;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.tab-switcher {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.tab-switcher button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #e5e7eb;
+  cursor: pointer;
+}
+
+.tab-switcher button.active {
+  background: #3b82f6;
+  color: #fff;
+}
+
+.table-section table,
+.recent-requests table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+table th,
+table td {
+  padding: 10px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+table th {
+  background: #f3f4f6;
+} */

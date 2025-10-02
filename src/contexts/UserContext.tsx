@@ -1,6 +1,5 @@
 import { useReducer, ReactNode, useEffect, useState } from "react";
 import {
-  ErrorResponse,
   UserSignIn,
   UserSignUp,
   AuthUserState,
@@ -33,7 +32,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
 
         const response = await fetch(URL, {
           method: "GET",
-          credentials: "include",
+
           headers: {
             Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json",
@@ -74,7 +73,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
     const URL = `${import.meta.env.VITE_SERVER}api/user/signup`;
     const response = await fetch(URL, {
       method: "POST",
-      credentials: "include",
+
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(userSignUp),
     });
@@ -95,7 +94,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
     const URL = `${import.meta.env.VITE_SERVER}api/auth/login`;
     const response = await fetch(URL, {
       method: "POST",
-      credentials: "include",
+
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(userSignIn),
     });
@@ -122,7 +121,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
     try {
       const response = await fetch(URL, {
         method: "POST",
-        credentials: "include",
+
         headers: {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
@@ -185,7 +184,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
     const accessToken = session.token;
     const response = await fetch(URL, {
       method: "GET",
-      credentials: "include",
+
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
@@ -214,7 +213,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
     const accessToken = session.token;
     const response = await fetch(URL, {
       method: "GET",
-      credentials: "include",
+
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
@@ -230,10 +229,9 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
     const departments: DepartmentType = await response.json();
     dispatch({ type: "LIST_DEPARTMENTS", payload: departments });
     setIsLoading(false);
-    return departments;
   };
 
-  const addUser = async (userToAdd: UserRegistration) => {
+  const addUser = async (userToAdd: any) => {
     const URL = `${import.meta.env.VITE_SERVER}api/auth/register`;
     const session = JSON.parse(localStorage.getItem("user") || "{}");
     const accessToken = session.token;
@@ -241,7 +239,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
     try {
       const response = await fetch(URL, {
         method: "POST",
-        credentials: "include",
+
         headers: {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
@@ -274,7 +272,7 @@ export const UserContextProvider = ({ children }: { children: ReactNode }) => {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
-        credentials: "include",
+
         body: JSON.stringify({ id: userId }),
       });
 

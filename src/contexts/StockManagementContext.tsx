@@ -44,7 +44,7 @@ export const StockManagementProvider = ({
     try {
       const response = await fetch(URL, {
         method: "GET",
-        credentials: "include",
+
         headers: {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
@@ -74,7 +74,7 @@ export const StockManagementProvider = ({
     try {
       const response = await fetch(URL, {
         method: "GET",
-        credentials: "include",
+
         headers: {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
@@ -113,7 +113,7 @@ export const StockManagementProvider = ({
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
-        credentials: "include",
+
         body: JSON.stringify(stockToAdd),
       });
 
@@ -144,7 +144,7 @@ export const StockManagementProvider = ({
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
-        credentials: "include",
+
         body: JSON.stringify(stock),
       });
 
@@ -172,7 +172,6 @@ export const StockManagementProvider = ({
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
-        credentials: "include",
       });
 
       if (!response.ok) {
@@ -205,7 +204,7 @@ export const StockManagementProvider = ({
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
-        credentials: "include",
+
         body: JSON.stringify({ location: newLocation }),
       });
 

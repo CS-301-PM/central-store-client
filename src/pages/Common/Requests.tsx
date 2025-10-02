@@ -1,36 +1,32 @@
-import RequestTableHeader from "../../components/other/RequestTableHeader";
-import { Role } from "../../types/User";
-import EnhancedTable from "../../components/other/RequestTable";
+import React from "react";
 import ReusableModal from "../../components/other/Modal";
+import RequestTableHeader from "../../components/other/RequestTableHeader";
+import { useUserContext } from "../../hooks/UserContextHook";
 import NewRequest from "../Department/NewRequest";
-import ApprovalChain from "../../components/other/ApprovalChain";
-import { useRequestManagementContext } from "../../hooks/useRequestHook";
-import { useEffect } from "react";
-import { useApprovalManagementContext } from "../../hooks/useApprovalContext";
+import { NavLink, Outlet } from "react-router-dom";
 
-function Requests({ role }: { role: Role }) {
-  const { state, getAllRequests } = useRequestManagementContext();
+function Requests() {
+  const { user } = useUserContext();
+  const userRole = user?.user?.role;
 
-  const { approvalState, pendingApprovals, approve, reject } =
-    useApprovalManagementContext();
+  const tabs = [
+    { to: "", label: "All" },
+    { to: "pending", label: "Pending" },
+    { to: "approved", label: "Approved" },
+    { to: "rejected", label: "Rejected" },
+  ];
 
-  useEffect(() => {
-    getAllRequests();
-    pendingApprovals();
-  }, []);
-
-  console.log(approvalState);
-  console.log(state);
   return (
     <div className="">
+      {/* Header */}
       <RequestTableHeader
         title="Department requests"
         subtitle="All pending and approved requests"
       >
-        {role === "DEPARTMENT_HOD" && (
+        {(userRole === "DEPARTMENT_HOD" || userRole === "STOREKEEPER") && (
           <ReusableModal
             color="primary"
-            variant={"contained"}
+            variant="contained"
             buttonLabel="New Request"
             title="Create new request"
           >
@@ -38,38 +34,30 @@ function Requests({ role }: { role: Role }) {
           </ReusableModal>
         )}
       </RequestTableHeader>
+      <div className="m-3">
+        <nav className="flex">
+          {tabs.map((tab) => (
+            <NavLink
+              key={tab.to}
+              to={tab.to}
+              end
+              className={({ isActive }) =>
+                `px-2 py-1 text-sm font-medium rounded-md transition ${
+                  isActive
+                    ? "bg-blue-600 text-white shadow"
+                    : "text-gray-600 hover:bg-gray-100"
+                }`
+              }
+            >
+              {tab.label}
+            </NavLink>
+          ))}
+        </nav>
 
-      {/* <ApprovalChain
-        title="Office Supplies Request #2024-002"
-        steps={[
-          {
-            id: "1",
-            role: "Procurement Officer",
-            status: "approved",
-            approverName: "John Doe",
-            timestamp: "2025-09-28T10:30:00Z",
-          },
-          {
-            id: "2",
-            role: "Inventory Manager",
-            status: "pending",
-            approverName: null,
-            timestamp: null,
-          },
-          {
-            id: "3",
-            role: "CFO",
-            status: "locked",
-            approverName: null,
-            timestamp: null,
-          },
-        ]}
-        currentUserRole={"Inve"}
-        onStepAction={() => {
-          alert();
-        }}
-      /> */}
-      {/* <EnhancedTable role={role} /> */}
+        <div className="mt-2">
+          <Outlet />
+        </div>
+      </div>
     </div>
   );
 }

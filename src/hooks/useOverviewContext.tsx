@@ -1,34 +1,40 @@
 // hooks/useOverviewContext.ts
 import { createContext, useContext } from "react";
-import { NotificationType } from "../types/overview";
 
-interface OverviewContextType {
-  approved: number;
-  declined: number;
-  inProcess: number;
-  notifications: NotificationType[];
-  fetchOverviewData: () => Promise<void>; // fetch both counts & notifications
+type AnalyticsActionType = {
+  getAnalyticsLogs: () => Promise<void>;
+  getAnalyticsStocks: () => Promise<void>;
+  getAnalyticsRequests: () => Promise<void>;
+  getAnalyticsApprovals: () => Promise<void>;
+  logs: any;
+  stocks: any;
+  requests: any;
+  approvals: any;
   isLoading: boolean;
   error: string | null;
-}
+};
 
-const initialState: OverviewContextType = {
-  approved: 0,
-  declined: 0,
-  inProcess: 0,
-  notifications: [],
-  fetchOverviewData: async () => Promise.resolve(),
-  isLoading: false,
+const initialState: AnalyticsActionType = {
+  getAnalyticsLogs: async () => {},
+  getAnalyticsStocks: async () => {},
+  getAnalyticsRequests: async () => {},
+  getAnalyticsApprovals: async () => {},
+  logs: {},
+  stocks: {},
+  requests: {},
+  approvals: {},
+  isLoading: true,
   error: null,
 };
 
-export const OverviewContext = createContext<OverviewContextType>(initialState);
+export const OverviewContext = createContext<AnalyticsActionType>(initialState);
 
-export const useOverviewContext = (): OverviewContextType => {
+export const useOverviewContext = (): AnalyticsActionType => {
   const context = useContext(OverviewContext);
-  if (!context)
+  if (!context) {
     throw new Error(
-      "useOverviewContext must be used within OverviewContextProvider"
+      "useOverviewContext must be used within an OverviewContextProvider"
     );
+  }
   return context;
 };

@@ -1,72 +1,87 @@
 // context/OverviewContextProvider.tsx
 import React, { useReducer, useState, useCallback } from "react";
-import {
-  overviewReducer,
-  SET_OVERVIEW_COUNTS,
-  SET_NOTIFICATIONS,
-} from "../reducers/OverviewReducer";
 import { OverviewContext } from "../hooks/useOverviewContext";
-import { NotificationType } from "../types/overview";
+import {
+  analyticsReducer,
+  GET_LOGS_ANALYTICS,
+  GET_STOCK_ANALYTICS,
+  GET_REQUEST_ANALYTICS,
+  GET_APPROVALS_ANALYTICS,
+} from "../reducers/OverviewReducer";
 
 export const OverviewContextProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const [state, dispatch] = useReducer(overviewReducer, {
-    approved: 0,
-    declined: 0,
-    inProcess: 0,
-    notifications: [],
+  const [stateAnalytics, dispatch] = useReducer(analyticsReducer, {
+    logs: {},
+    stocks: {},
+    requests: {},
+    approvals: {},
   });
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchOverviewData = useCallback(async () => {
-    try {
-      setIsLoading(true);
+  const session = JSON.parse(localStorage.getItem("user") || "{}");
+  const accessToken = session.token;
+  const SERVER_URL = import.meta.env.VITE_SERVER;
 
-      // Simulate fetching data from server
-      const response = await new Promise<{
-        counts: { approved: number; declined: number; inProcess: number };
-        notifications: NotificationType[];
-      }>((resolve) =>
-        setTimeout(
-          () =>
-            resolve({
-              counts: { approved: 15, declined: 4, inProcess: 6 },
-              notifications: [
-                {
-                  id: "1",
-                  message: "New request pending approval",
-                  timestamp: new Date().toISOString(),
-                },
-                {
-                  id: "2",
-                  message: "Request declined by manager",
-                  timestamp: new Date().toISOString(),
-                },
-              ],
-            }),
-          500
-        )
-      );
+  const fetchAnalytics = useCallback(
+    async (endpoint: string, actionType: string) => {
+      try {
+        setIsLoading(true);
+        const response = await fetch(`${SERVER_URL}${endpoint}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
 
-      dispatch({ type: SET_OVERVIEW_COUNTS, payload: response.counts });
-      dispatch({ type: SET_NOTIFICATIONS, payload: response.notifications });
-      setIsLoading(false);
-    } catch (err: any) {
-      setError(err.message || "Failed to fetch overview data");
-      setIsLoading(false);
-    }
-  }, []);
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log(data);
+        dispatch({ type: actionType, payload: data });
+        setIsLoading(false);
+      } catch (err: any) {
+        setError(err.message || "Failed to fetch analytics");
+        setIsLoading(false);
+      }
+    },
+    [accessToken, SERVER_URL]
+  );
+
+  // All analytics methods
+  const getAnalyticsLogs = useCallback(async () => {
+    await fetchAnalytics("api/analytics/logs", GET_LOGS_ANALYTICS);
+  }, [fetchAnalytics]);
+
+  const getAnalyticsStocks = useCallback(async () => {
+    await fetchAnalytics("api/analytics/stocks", GET_STOCK_ANALYTICS);
+  }, [fetchAnalytics]);
+
+  const getAnalyticsRequests = useCallback(async () => {
+    await fetchAnalytics("api/analytics/requests", GET_REQUEST_ANALYTICS);
+  }, [fetchAnalytics]);
+
+  const getAnalyticsApprovals = useCallback(async () => {
+    await fetchAnalytics("api/analytics/approvals", GET_APPROVALS_ANALYTICS);
+  }, [fetchAnalytics]);
 
   return (
     <OverviewContext.Provider
       value={{
-        approved: state.approved,
-        declined: state.declined,
-        inProcess: state.inProcess,
-        notifications: state.notifications,
-        fetchOverviewData,
+        logs: stateAnalytics.logs,
+        stocks: stateAnalytics.stocks,
+        requests: stateAnalytics.requests,
+        approvals: stateAnalytics.approvals,
+        getAnalyticsLogs,
+        getAnalyticsStocks,
+        getAnalyticsRequests,
+        getAnalyticsApprovals,
         isLoading,
         error,
       }}
